@@ -1,7 +1,9 @@
 import typing
 
 from pymongo.collection import Collection
+from pymongo.errors import DuplicateKeyError
 
+from runehistory.app.exceptions import DuplicateError
 from runehistory.domain.models.account import Account
 
 
@@ -10,7 +12,10 @@ class AccountRepository:
         self.collection = collection
 
     def create(self, account: Account) -> Account:
-        self.collection.insert_one(AccountRepository.to_record(account))
+        try:
+            self.collection.insert_one(AccountRepository.to_record(account))
+        except DuplicateKeyError:
+            raise DuplicateError('Account already exists')
         return account
 
     def get(self, slug: str) -> typing.Union[Account, None]:
