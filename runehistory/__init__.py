@@ -9,7 +9,14 @@ from runehistory.framework.api.v1.controllers.accounts import accounts
 
 
 def make_json_error(ex) -> Response:
-    response = jsonify(message=str(ex))
+    if isinstance(ex, HTTPException):
+        message = ex.description
+        if message is type(ex).description:
+            message = ex.name
+        response = jsonify(message=message)
+    else:
+        response = jsonify(message=str(ex))
+
     response.status_code = (ex.code
                             if isinstance(ex, HTTPException)
                             else 500)
