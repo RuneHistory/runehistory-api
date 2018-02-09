@@ -1,12 +1,12 @@
 from pymongo import MongoClient
 
-from ioc import inject, provider, SINGLETON
+from ioccontainer import inject, provider, scopes
 from runehistory.framework.services.account import AccountService
 from runehistory.app.repositories.account import AccountRepository
 
 
 def register_service_providers():
-    @provider(MongoClient, SINGLETON)
+    @provider(MongoClient, scopes.SINGLETON)
     def provide_db():
         return MongoClient('127.0.0.1', 27017).test
 

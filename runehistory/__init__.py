@@ -4,7 +4,6 @@ from flask import Flask, jsonify, Response
 from werkzeug.exceptions import default_exceptions
 from werkzeug.exceptions import HTTPException
 
-from ioc import container
 from runehistory.framework.services.providers import register_service_providers
 from runehistory.framework.api.v1.controllers.accounts import accounts
 
@@ -28,7 +27,6 @@ def _register_blueprints(app: Flask):
 
 def make_app(import_name: str, **kwargs: typing.Dict) -> Flask:
     app = Flask(import_name, **kwargs)
-    app.container = container
     _json_error_handlers(app)
     register_service_providers()
     _register_blueprints(app)
