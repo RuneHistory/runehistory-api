@@ -1,11 +1,13 @@
 import typing
 
 from runehistory.domain.models.account import Account
-from runehistory.app.repositories.account import AccountRepository
+
+if typing.TYPE_CHECKING:
+    from runehistory.app.repositories.account import AccountRepository
 
 
 class AccountService:
-    def __init__(self, account_repository: AccountRepository):
+    def __init__(self, account_repository: 'AccountRepository'):
         self.account_repository = account_repository
 
     def create(self, nickname: str) -> Account:
