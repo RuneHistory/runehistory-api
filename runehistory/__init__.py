@@ -8,24 +8,29 @@ from runehistory.framework.services.providers import register_service_providers
 from runehistory.framework.api.v1.controllers.accounts import accounts
 
 
-def make_json_error(ex) -> Response:
-    if isinstance(ex, HTTPException):
-        message = ex.description
-        if message is type(ex).description:
-            message = ex.name
+def get_json_error_handler(app: Flask):
+    def make_json_error(ex) -> Response:
+        status_code = (ex.code
+                       if isinstance(ex, HTTPException)
+                       else 500)
+        message = 'Something went wrong'
+        if status_code < 500 or app.debug:
+            if isinstance(ex, HTTPException):
+                message = ex.description
+                if message is type(ex).description:
+                    message = ex.name
+            else:
+                message = str(ex)
         response = jsonify(message=message)
-    else:
-        response = jsonify(message=str(ex))
+        response.status_code = status_code
+        return response
 
-    response.status_code = (ex.code
-                            if isinstance(ex, HTTPException)
-                            else 500)
-    return response
+    return make_json_error
 
 
 def _json_error_handlers(app: Flask):
     for code in default_exceptions.keys():
-        app.register_error_handler(code, make_json_error)
+        app.register_error_handler(code, get_json_error_handler(app))
 
 
 def _register_blueprints(app: Flask):
