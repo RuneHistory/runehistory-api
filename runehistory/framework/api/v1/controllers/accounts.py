@@ -26,4 +26,7 @@ def post_account(account_service: AccountService) -> Response:
         account = account_service.create(data['nickname'])
         return jsonify(account.__dict__)
     except DuplicateError:
-        abort(HTTPStatus.BAD_REQUEST, 'Account already exists: {}'.format(data['nickname']))
+        abort(
+            HTTPStatus.BAD_REQUEST,
+            'Account already exists: {}'.format(data['nickname'])
+        )
