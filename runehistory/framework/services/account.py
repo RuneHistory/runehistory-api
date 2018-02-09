@@ -12,5 +12,5 @@ class AccountService:
         account = Account(nickname)
         return self.account_repository.create(account)
 
-    def get(self, slug: str) -> typing.Union[Account, None]:
-        return self.account_repository.get(slug)
+    def find(self, slug: str)-> typing.Union[Account, None]:
+        return self.account_repository.find(slug)

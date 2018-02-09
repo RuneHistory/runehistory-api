@@ -4,7 +4,7 @@ from slugify import slugify
 
 
 class Account:
-    def __init__(self, nickname: str, slug: str = None,
+    def __init__(self, nickname: str = None, slug: str = None,
                  runs_unchanged: int = 0, last_run_at: datetime = None,
                  run_changed_at: datetime = None):
         self.nickname = nickname
