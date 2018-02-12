@@ -6,7 +6,7 @@ from werkzeug.exceptions import HTTPException
 
 from runehistory.framework.services.providers import register_service_providers
 from runehistory.framework.api.v1.controllers.accounts import accounts_bp
-from runehistory.framework.json_encoder import CustomJSONEncoder
+from runehistory.framework.json_encoder import CustomJsonEncoder
 
 
 def get_json_error_handler(app: Flask):
