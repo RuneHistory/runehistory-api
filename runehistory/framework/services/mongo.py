@@ -1,6 +1,7 @@
 import typing
 
 from pymongo.errors import DuplicateKeyError
+from pymongo import ASCENDING, DESCENDING
 
 from runehistory.app.database import DatabaseAdapter, TableAdapter
 from runehistory.app.exceptions import DuplicateError
@@ -51,10 +52,28 @@ class MongoTableAdapter(TableAdapter):
             raise DuplicateError('Duplicate record')
         return self._record_from_id(record)
 
-    def find(self, identifier: typing.Any,
-             fields: typing.List = None) -> typing.Union[typing.Dict, None]:
-        record = self.collection.find_one({'_id': identifier},
-                                          projection=fields)
+    def find_one(self, identifier: typing.Any,
+                 fields: typing.List = None
+                 ) -> typing.Union[typing.Dict, None]:
+        record = self.collection.find_one(
+            {'_id': identifier},
+            projection=fields
+        )
         if record is None:
             return None
         return self._record_from_id(record)
+
+    def find(self, where: typing.Dict = None, fields: typing.List = None,
+             limit: int = 100, offset: int = None,
+             order: typing.List = None
+             ) -> typing.List:
+        results = self.collection.find(where, fields).limit(limit)
+        if offset is not None:
+            results = results.skip(offset)
+        if order is not None:
+            updated_order = []
+            for item in order:
+                direction = DESCENDING if item[1] is 'desc' else ASCENDING
+                updated_order.append((item[0], direction))
+            results = results.sort(updated_order)
+        return [self._record_from_id(record) for record in results]

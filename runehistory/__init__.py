@@ -5,7 +5,8 @@ from werkzeug.exceptions import default_exceptions
 from werkzeug.exceptions import HTTPException
 
 from runehistory.framework.services.providers import register_service_providers
-from runehistory.framework.api.v1.controllers.accounts import accounts
+from runehistory.framework.api.v1.controllers.accounts import accounts_bp
+from runehistory.framework.json_encoder import CustomJSONEncoder
 
 
 def get_json_error_handler(app: Flask):
@@ -34,7 +35,7 @@ def _json_error_handlers(app: Flask):
 
 
 def _register_blueprints(app: Flask):
-    app.register_blueprint(accounts, url_prefix='/v1/accounts')
+    app.register_blueprint(accounts_bp, url_prefix='/v1/accounts')
 
 
 def make_app(import_name: str, **kwargs: typing.Dict) -> Flask:
@@ -42,5 +43,6 @@ def make_app(import_name: str, **kwargs: typing.Dict) -> Flask:
     _json_error_handlers(app)
     register_service_providers()
     _register_blueprints(app)
+    app.json_encoder = CustomJSONEncoder
 
     return app
