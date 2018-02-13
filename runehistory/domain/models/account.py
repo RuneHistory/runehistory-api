@@ -7,7 +7,7 @@ class Account:
     def __init__(self, nickname: str, slug: str = None,
                  runs_unchanged: int = 0, last_run_at: datetime = None,
                  run_changed_at: datetime = None, created_at: datetime = None,
-                 updated_at: datetime = None):
+                 updated_at: datetime = None, id: str = None):
         self.nickname = nickname
         if slug is None:
             slug = slugify(nickname)
@@ -17,6 +17,7 @@ class Account:
         self.run_changed_at = run_changed_at
         self.created_at = created_at
         self.updated_at = updated_at
+        self.id = id
 
     def get_encodable(self):
         return {
@@ -30,4 +31,5 @@ class Account:
                 if self.created_at else None,
             'updated_at': self.updated_at.isoformat() \
                 if self.updated_at else None,
+            'id': self.id,
         }

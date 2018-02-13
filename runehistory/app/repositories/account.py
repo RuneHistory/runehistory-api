@@ -6,7 +6,7 @@ from runehistory.domain.models.account import Account
 
 
 class AccountRepository:
-    identifier = 'slug'
+    identifier = 'id'
 
     def __init__(self, accounts: TableAdapter):
         self.accounts = accounts
@@ -15,12 +15,12 @@ class AccountRepository:
     def create(self, account: Account) -> Account:
         if account.created_at is None:
             account.created_at = datetime.utcnow()
-        self.accounts.insert(AccountRepository.to_record(account))
-        return account
+        record = self.accounts.insert(AccountRepository.to_record(account))
+        return AccountRepository.from_record(record)
 
-    def find_one(self, slug: str) \
+    def find_one(self, where: typing.List = None, fields: typing.List = None) \
             -> typing.Union[Account, None]:
-        record = self.accounts.find_one(slug)
+        record = self.accounts.find_one(where, fields)
         if record is None:
             return None
         return AccountRepository.from_record(record)
@@ -43,6 +43,7 @@ class AccountRepository:
             'run_changed_at': account.run_changed_at,
             'created_at': account.created_at,
             'updated_at': account.updated_at,
+            'id': account.id,
         }
 
     @staticmethod

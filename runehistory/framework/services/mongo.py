@@ -2,6 +2,7 @@ import typing
 
 from pymongo.errors import DuplicateKeyError
 from pymongo import ASCENDING, DESCENDING
+from bson import ObjectId
 
 from runehistory.app.database import DatabaseAdapter, TableAdapter
 from runehistory.app.exceptions import DuplicateError
@@ -25,12 +26,14 @@ class MongoTableAdapter(TableAdapter):
         self.collection = collection
 
     def _record_to_id(self, record: typing.Dict) -> typing.Dict:
-        if self.identifier is not None:
+        if self.identifier and self.identifier in record:
             record['_id'] = record.pop(self.identifier)
         return record
 
     def _record_from_id(self, record: typing.Dict) -> typing.Dict:
-        if self.identifier is not None:
+        if '_id' in record and isinstance(record['_id'], ObjectId):
+            record['_id'] = str(record['_id'])
+        if self.identifier and '_id' in record:
             record[self.identifier] = record.pop('_id')
         return record
 
@@ -47,16 +50,18 @@ class MongoTableAdapter(TableAdapter):
     def insert(self, record: typing.Dict) -> typing.Dict:
         try:
             record = self._record_to_id(record)
+            if record['_id'] is None:
+                record.pop('_id')
             self.collection.insert_one(record)
         except DuplicateKeyError:
             raise DuplicateError('Duplicate record')
         return self._record_from_id(record)
 
-    def find_one(self, identifier: typing.Any,
-                 fields: typing.List = None
-                 ) -> typing.Union[typing.Dict, None]:
+    def find_one(self, where: typing.List = None, fields: typing.List = None)\
+            -> typing.Union[typing.Dict, None]:
+        parsed_where = self._parse_conditions(where)
         record = self.collection.find_one(
-            {'_id': identifier},
+            parsed_where,
             projection=fields
         )
         if record is None:
@@ -96,21 +101,22 @@ class MongoTableAdapter(TableAdapter):
             return self._parse_condition_dict(condition)
 
     def _parse_condition_list(self, condition: typing.List) -> typing.Dict:
+        key = '_id' if condition[0] == self.identifier else condition[0]
         if len(condition) is 2:
             if isinstance(condition[1], dict):
                 return self._parse_condition_dict(condition[1])
-            return {condition[0]: {'$eq': condition[1]}}
+            return {key: {'$eq': condition[1]}}
         if len(condition) is 3:
             if condition[1] == '=':
-                return {condition[0]: {'$eq': condition[2]}}
+                return {key: {'$eq': condition[2]}}
             if condition[1] == '>':
-                return {condition[0]: {'$gt': condition[2]}}
+                return {key: {'$gt': condition[2]}}
             if condition[1] == '>=':
-                return {condition[0]: {'$gte': condition[2]}}
+                return {key: {'$gte': condition[2]}}
             if condition[1] == '<':
-                return {condition[0]: {'$lt': condition[2]}}
+                return {key: {'$lt': condition[2]}}
             if condition[1] == '<=':
-                return {condition[0]: {'$lte': condition[2]}}
+                return {key: {'$lte': condition[2]}}
         raise Exception('Unhandled condition')
 
     def _parse_condition_dict(self, conditions: typing.Dict) -> typing.Dict:

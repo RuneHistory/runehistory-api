@@ -13,7 +13,7 @@ accounts_bp = Blueprint('account', __name__, url_prefix='/accounts')
 @accounts_bp.route('/<slug>', methods=['GET'])
 @inject('account_service')
 def get_account(slug, account_service: AccountService) -> Response:
-    account = account_service.find_one(slug)
+    account = account_service.find_one_by_slug(slug)
     if not account:
         abort(HTTPStatus.NOT_FOUND, 'Account not found: {}'.format(slug))
     return jsonify(account)
