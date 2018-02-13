@@ -85,8 +85,10 @@ class MongoTableAdapter(TableAdapter):
             results = results.sort(updated_order)
         return [self._record_from_id(record) for record in results]
 
-    def _parse_conditions(self, conditions: typing.List,
+    def _parse_conditions(self, conditions: typing.Union[typing.List, None],
                           statement: str = 'and') -> typing.Dict:
+        if not conditions:
+            return dict()
         parsed_conditions = dict()
         parsed_conditions['${}'.format(statement)] = [
             self._parse_condition(condition) for condition in conditions]
