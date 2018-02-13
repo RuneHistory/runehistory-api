@@ -1,4 +1,5 @@
 import typing
+from datetime import datetime
 
 from runehistory.domain.models.account import Account
 
@@ -18,9 +19,24 @@ class AccountService:
     def find_one(self, slug: str) -> typing.Union[Account, None]:
         return self.account_repository.find_one(slug)
 
-    def find(self, where: typing.Dict = None, fields: typing.List = None,
-             limit: int = 100, offset: int = None,
-             order: typing.List = None
-             ) -> typing.List:
-        return self.account_repository.find(where, fields, limit, offset,
-                                            order)
+    def find(self, last_ran_before: datetime = None,
+             runs_unchanged_min: int = None, runs_unchanged_max: int = None,
+             prioritise: bool = False) -> typing.List:
+        where = []
+        order = []
+        if last_ran_before:
+            where.append({'or': [
+                ['last_ran_before', '<', last_ran_before],
+                ['last_ran_before', '=', None],
+            ]})
+        if runs_unchanged_min:
+            where.append(['runs_unchanged', '>=', runs_unchanged_min])
+        if runs_unchanged_max:
+            where.append(['runs_unchanged', '<=', runs_unchanged_max])
+        if prioritise:
+            order.append(['runs_unchanged', 'asc'])
+            order.append(['last_run_at', 'asc'])
+
+        where = where if len(where) else None
+        order = order if len(order) else None
+        return self.account_repository.find(where, order=order)

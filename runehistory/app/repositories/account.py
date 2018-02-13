@@ -25,7 +25,7 @@ class AccountRepository:
             return None
         return AccountRepository.from_record(record)
 
-    def find(self, where: typing.Dict = None, fields: typing.List = None,
+    def find(self, where: typing.List = None, fields: typing.List = None,
              limit: int = 100, offset: int = None,
              order: typing.List = None
              ) -> typing.List:

@@ -63,11 +63,13 @@ class MongoTableAdapter(TableAdapter):
             return None
         return self._record_from_id(record)
 
-    def find(self, where: typing.Dict = None, fields: typing.List = None,
+    def find(self, where: typing.List = None, fields: typing.List = None,
              limit: int = 100, offset: int = None,
              order: typing.List = None
              ) -> typing.List:
-        results = self.collection.find(where, fields).limit(limit)
+        parsed_where = self._parse_conditions(where)
+
+        results = self.collection.find(parsed_where, fields).limit(limit)
         if offset is not None:
             results = results.skip(offset)
         if order is not None:
@@ -77,3 +79,43 @@ class MongoTableAdapter(TableAdapter):
                 updated_order.append((item[0], direction))
             results = results.sort(updated_order)
         return [self._record_from_id(record) for record in results]
+
+    def _parse_conditions(self, conditions: typing.List,
+                          statement: str = 'and') -> typing.Dict:
+        parsed_conditions = dict()
+        parsed_conditions['${}'.format(statement)] = [
+            self._parse_condition(condition) for condition in conditions]
+
+        return parsed_conditions
+
+    def _parse_condition(self, condition: typing.Union[
+        typing.List, typing.Dict]) -> typing.Dict:
+        if isinstance(condition, list):
+            return self._parse_condition_list(condition)
+        if isinstance(condition, dict):
+            return self._parse_condition_dict(condition)
+
+    def _parse_condition_list(self, condition: typing.List) -> typing.Dict:
+        if len(condition) is 2:
+            if isinstance(condition[1], dict):
+                return self._parse_condition_dict(condition[1])
+            return {condition[0]: {'$eq': condition[1]}}
+        if len(condition) is 3:
+            if condition[1] == '=':
+                return {condition[0]: {'$eq': condition[2]}}
+            if condition[1] == '>':
+                return {condition[0]: {'$gt': condition[2]}}
+            if condition[1] == '>=':
+                return {condition[0]: {'$gte': condition[2]}}
+            if condition[1] == '<':
+                return {condition[0]: {'$lt': condition[2]}}
+            if condition[1] == '<=':
+                return {condition[0]: {'$lte': condition[2]}}
+        raise Exception('Unhandled condition')
+
+    def _parse_condition_dict(self, conditions: typing.Dict) -> typing.Dict:
+        parsed_conditions = {}
+        for statement, sub_conditions in conditions.items():
+            parsed_conditions.update(
+                self._parse_conditions(sub_conditions, statement))
+        return parsed_conditions
