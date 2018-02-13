@@ -43,6 +43,6 @@ def make_app(import_name: str, **kwargs: typing.Dict) -> Flask:
     _json_error_handlers(app)
     register_service_providers()
     _register_blueprints(app)
-    app.json_encoder = CustomJSONEncoder
+    app.json_encoder = CustomJsonEncoder
 
     return app

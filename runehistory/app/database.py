@@ -15,7 +15,7 @@ class TableAdapter:
                  fields: typing.List = None
                  ) -> typing.Union[typing.Dict, None]: pass
 
-    def find(self, where: typing.Dict = None, fields: typing.List = None,
+    def find(self, where: typing.List = None, fields: typing.List = None,
              limit: int = 100, offset: int = None,
              order: typing.List = None
              ) -> typing.List: pass
