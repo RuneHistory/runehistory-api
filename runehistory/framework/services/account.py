@@ -16,8 +16,12 @@ class AccountService:
 
         return self.account_repository.create(account)
 
-    def find_one(self, slug: str) -> typing.Union[Account, None]:
-        return self.account_repository.find_one(slug)
+    def find_one_by_slug(self, slug: str) -> typing.Union[Account, None]:
+        return self.find_one([['slug', slug]])
+
+    def find_one(self, where: typing.List = None, fields: typing.List = None)\
+            -> typing.Union[Account, None]:
+        return self.account_repository.find_one(where, fields)
 
     def find(self, last_ran_before: datetime = None,
              runs_unchanged_min: int = None, runs_unchanged_max: int = None,
