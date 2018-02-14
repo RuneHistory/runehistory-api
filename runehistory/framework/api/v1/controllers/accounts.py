@@ -7,7 +7,7 @@ import dateutil.parser
 from runehistory.app.exceptions import DuplicateError
 from runehistory.framework.services.account import AccountService
 
-accounts_bp = Blueprint('account', __name__, url_prefix='/accounts')
+accounts_bp = Blueprint('accounts', __name__)
 
 
 @accounts_bp.route('/<slug>', methods=['GET'])
