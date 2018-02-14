@@ -31,8 +31,8 @@ class MongoTableAdapter(TableAdapter):
         return record
 
     def _record_from_id(self, record: typing.Dict) -> typing.Dict:
-        if '_id' in record and isinstance(record['_id'], ObjectId):
-            record['_id'] = str(record['_id'])
+        if '_id' in record and not isinstance(record['_id'], ObjectId):
+            record['_id'] = ObjectId(record['_id'])
         if self.identifier and '_id' in record:
             record[self.identifier] = record.pop('_id')
         return record
@@ -84,6 +84,12 @@ class MongoTableAdapter(TableAdapter):
                 updated_order.append((item[0], direction))
             results = results.sort(updated_order)
         return [self._record_from_id(record) for record in results]
+
+    def update_one(self, where: typing.List, data: typing.Dict) -> bool:
+        parsed_where = self._parse_conditions(where)
+        parsed_data = {'$set': data}
+        results = self.collection.update_one(parsed_where, parsed_data)
+        return results.modified_count > 0
 
     def _parse_conditions(self, conditions: typing.Union[typing.List, None],
                           statement: str = 'and') -> typing.Dict:
