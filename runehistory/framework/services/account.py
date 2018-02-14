@@ -30,8 +30,8 @@ class AccountService:
         order = []
         if last_ran_before:
             where.append({'or': [
-                ['last_ran_before', '<', last_ran_before],
-                ['last_ran_before', '=', None],
+                ['last_run_at', '<', last_ran_before],
+                ['last_run_at', '=', None],
             ]})
         if runs_unchanged_min:
             where.append(['runs_unchanged', '>=', runs_unchanged_min])
