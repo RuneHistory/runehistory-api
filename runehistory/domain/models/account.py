@@ -10,7 +10,7 @@ class Account:
                  updated_at: datetime = None, id: str = None):
         self.nickname = nickname
         if slug is None:
-            slug = slugify(nickname)
+            slug = self.generate_slug(nickname)
         self.slug = slug
         self.runs_unchanged = runs_unchanged
         self.last_run_at = last_run_at
@@ -18,6 +18,10 @@ class Account:
         self.created_at = created_at
         self.updated_at = updated_at
         self.id = id
+
+    def generate_slug(self, nickname: str = None):
+        nickname = nickname if nickname is not None else self.nickname
+        return slugify(nickname)
 
     def get_encodable(self):
         return {

@@ -1,5 +1,7 @@
-from flask.json import JSONEncoder
 from datetime import datetime
+
+from flask.json import JSONEncoder
+from bson import ObjectId
 
 
 class CustomJsonEncoder(JSONEncoder):
@@ -12,6 +14,8 @@ class CustomJsonEncoder(JSONEncoder):
                 if obj.utcoffset() is not None:
                     obj = obj - obj.utcoffset()
                 return obj.isoformat()
+            if isinstance(obj, ObjectId):
+                return str(obj)
             iterable = iter(obj)
         except TypeError:
             pass

@@ -33,6 +33,27 @@ class AccountRepository:
         return [account for account in
                 map(AccountRepository.from_record, results)]
 
+    def update_one(self, where: typing.List, data: typing.Dict) -> bool:
+        return self.accounts.update_one(where, data)
+
+    def update(self, account: Account, data: typing.Dict) -> bool:
+        account_id = getattr(account, type(self).identifier, None)
+        if not account_id:
+            return False
+        if 'nickname' in data:
+            data['slug'] = account.generate_slug(data['nickname'])
+        data['updated_at'] = datetime.utcnow()
+        old_data = dict()
+        for k, v in data.items():
+            old_data[k] = getattr(account, k)
+            setattr(account, k, v)
+        updated = self.update_one([[type(self).identifier, account_id]], data)
+        if not updated:
+            for k, v in old_data.items():
+                setattr(account, k, v)
+            return False
+        return True
+
     @staticmethod
     def to_record(account: Account) -> typing.Dict:
         return {

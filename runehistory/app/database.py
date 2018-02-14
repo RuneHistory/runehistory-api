@@ -18,3 +18,5 @@ class TableAdapter:
              limit: int = 100, offset: int = None,
              order: typing.List = None
              ) -> typing.List: pass
+
+    def update_one(self, where: typing.List, data: typing.Dict) -> bool: pass

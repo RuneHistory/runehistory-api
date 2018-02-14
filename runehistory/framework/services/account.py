@@ -44,3 +44,9 @@ class AccountService:
         where = where if len(where) else None
         order = order if len(order) else None
         return self.account_repository.find(where, order=order)
+
+    def update_one(self, where: typing.List, data: typing.Dict) -> bool:
+        return self.account_repository.update_one(where, data)
+
+    def update(self, account: Account, data: typing.Dict) -> bool:
+        return self.account_repository.update(account, data)

@@ -51,3 +51,27 @@ def post_account(account_service: AccountService) -> Response:
             HTTPStatus.BAD_REQUEST,
             'Account already exists: {}'.format(data['nickname'])
         )
+
+
+@accounts_bp.route('/<slug>', methods=['PUT'])
+@inject('account_service')
+def put_account(slug, account_service: AccountService) -> Response:
+    body = request.get_json()
+    account = account_service.find_one_by_slug(slug)
+    if not account:
+        abort(HTTPStatus.NOT_FOUND, 'Account not found: {}'.format(slug))
+    update_data = dict()
+    valid_updates = ['nickname']
+    for update in valid_updates:
+        if update not in body:
+            continue
+        update_data[update] = body[update]
+
+    if not len(update_data):
+        abort(HTTPStatus.BAD_REQUEST, 'No updates specified')
+
+    updated = account_service.update(account, update_data)
+    if not updated:
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR, 'Unable to update account')
+
+    return jsonify(account)
