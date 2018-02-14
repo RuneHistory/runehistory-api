@@ -6,6 +6,7 @@ from werkzeug.exceptions import HTTPException
 
 from runehistory.framework.services.providers import register_service_providers
 from runehistory.framework.api.v1.controllers.accounts import accounts_bp
+from runehistory.framework.api.v1.controllers.highscores import highscores_bp
 from runehistory.framework.json_encoder import CustomJsonEncoder
 
 
@@ -36,6 +37,7 @@ def _json_error_handlers(app: Flask):
 
 def _register_blueprints(app: Flask):
     app.register_blueprint(accounts_bp, url_prefix='/v1/accounts')
+    app.register_blueprint(highscores_bp, url_prefix='/v1/accounts/<slug>/highscores')
 
 
 def make_app(import_name: str, **kwargs: typing.Dict) -> Flask:
