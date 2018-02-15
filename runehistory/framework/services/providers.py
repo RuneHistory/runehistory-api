@@ -2,9 +2,11 @@ from pymongo import MongoClient
 from ioccontainer import inject, provider, scopes
 
 from runehistory.app.database import DatabaseAdapter
-from runehistory.app.repositories.account import AccountRepository
 from runehistory.framework.services.mongo import MongoDatabaseAdapter
+from runehistory.app.repositories.account import AccountRepository
 from runehistory.framework.services.account import AccountService
+from runehistory.app.repositories.highscore import HighScoreRepository
+from runehistory.framework.services.highscore import HighScoreService
 
 
 def register_service_providers():
@@ -32,3 +34,16 @@ def register_service_providers():
     @inject('repo')
     def provide_account_service(repo: AccountRepository) -> AccountService:
         return AccountService(repo)
+
+    @provider(HighScoreRepository)
+    @inject('db')
+    def provide_highscore_repository(
+            db: DatabaseAdapter) -> HighScoreRepository:
+        table_adapter = db.table('highscores')
+        return HighScoreRepository(table_adapter)
+
+    @provider(HighScoreService)
+    @inject('repo')
+    def provide_highscore_service(
+            repo: HighScoreRepository) -> HighScoreService:
+        return HighScoreService(repo)

@@ -6,11 +6,13 @@ from runehistory.domain.models.account import Account
 
 
 class AccountRepository:
-    identifier = 'id'
+    id = 'id'
+    ids = []
 
     def __init__(self, accounts: TableAdapter):
         self.accounts = accounts
-        self.accounts.identifier = type(self).identifier
+        self.accounts.id = type(self).id
+        self.accounts.ids = type(self).ids
 
     def create(self, account: Account) -> Account:
         if account.created_at is None:
@@ -37,7 +39,7 @@ class AccountRepository:
         return self.accounts.update_one(where, data)
 
     def update(self, account: Account, data: typing.Dict) -> bool:
-        account_id = getattr(account, type(self).identifier, None)
+        account_id = getattr(account, type(self).id, None)
         if not account_id:
             return False
         if 'nickname' in data:
@@ -47,7 +49,7 @@ class AccountRepository:
         for k, v in data.items():
             old_data[k] = getattr(account, k)
             setattr(account, k, v)
-        updated = self.update_one([[type(self).identifier, account_id]], data)
+        updated = self.update_one([[type(self).id, account_id]], data)
         if not updated:
             for k, v in old_data.items():
                 setattr(account, k, v)

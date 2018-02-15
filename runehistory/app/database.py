@@ -6,8 +6,9 @@ class DatabaseAdapter:
 
 
 class TableAdapter:
-    def __init__(self, identifier: str = None):
-        self.identifier = identifier
+    def __init__(self, id: str = None, ids: typing.List = None):
+        self.id = id
+        self.ids = ids
 
     def insert(self, data: typing.Any) -> typing.Dict: pass
 
