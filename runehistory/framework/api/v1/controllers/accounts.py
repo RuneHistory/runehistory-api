@@ -5,7 +5,7 @@ from ioccontainer import inject
 import dateutil.parser
 
 from runehistory.app.exceptions import DuplicateError
-from runehistory.framework.services.account import AccountService
+from runehistory.app.services.account import AccountService
 
 accounts_bp = Blueprint('accounts', __name__)
 

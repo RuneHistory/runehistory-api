@@ -3,8 +3,8 @@ from http import HTTPStatus
 from flask import Blueprint, jsonify, abort, Response, request
 from ioccontainer import inject
 
-from runehistory.framework.services.account import AccountService
-from runehistory.framework.services.highscore import HighScoreService
+from runehistory.app.services.account import AccountService
+from runehistory.app.services.highscore import HighScoreService
 
 highscores_bp = Blueprint('highscores', __name__)
 
