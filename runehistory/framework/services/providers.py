@@ -4,9 +4,9 @@ from ioccontainer import inject, provider, scopes
 from runehistory.app.database import DatabaseAdapter
 from runehistory.framework.services.mongo import MongoDatabaseAdapter
 from runehistory.app.repositories.account import AccountRepository
-from runehistory.framework.services.account import AccountService
+from runehistory.app.services.account import AccountService
 from runehistory.app.repositories.highscore import HighScoreRepository
-from runehistory.framework.services.highscore import HighScoreService
+from runehistory.app.services.highscore import HighScoreService
 
 
 def register_service_providers():
