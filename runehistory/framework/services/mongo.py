@@ -16,31 +16,61 @@ class MongoDatabaseAdapter(DatabaseAdapter):
     def __init__(self, db: 'Database'):
         self.db = db
 
-    def table(self, table: str, identifier: str = None) -> 'MongoTableAdapter':
-        return MongoTableAdapter(self.db[table], identifier)
+    def table(self, table: str, id: str = None,
+              ids: typing.List = None) -> 'MongoTableAdapter':
+        if ids is None:
+            ids = []
+        return MongoTableAdapter(self.db[table], id, ids)
 
 
 class MongoTableAdapter(TableAdapter):
-    def __init__(self, collection: 'Collection', identifier: str = None):
-        super().__init__(identifier)
+    def __init__(self, collection: 'Collection', id: str = None,
+                 ids: typing.List = None):
+        super().__init__(id, ids)
         self.collection = collection
 
     def _record_to_id(self, record: typing.Dict) -> typing.Dict:
-        if self.identifier and self.identifier in record:
-            record['_id'] = record.pop(self.identifier)
-        return record
+        return {self._key_to_id(key): self._value_to_id(key, value)
+                for key, value in record.items()}
 
     def _record_from_id(self, record: typing.Dict) -> typing.Dict:
-        if '_id' in record and not isinstance(record['_id'], ObjectId):
-            record['_id'] = ObjectId(record['_id'])
-        if self.identifier and '_id' in record:
-            record[self.identifier] = record.pop('_id')
-        return record
+        return {self._key_from_id(key): self._value_from_id(value)
+                for key, value in record.items()}
+
+    def _key_to_id(self, key: str):
+        if key == self.id:
+            return '_id'
+        return key
+
+    def _value_to_id(self, key: str, value: typing.Any):
+        if key == self.id or key in self.ids and isinstance(value, str):
+            return ObjectId(value)
+        return value
+
+    def _key_from_id(self, key: str):
+        if key == '_id':
+            return self.id
+        return key
+
+    def _value_from_id(self, value: typing.Any):
+        if isinstance(value, ObjectId):
+            return str(value)
+        return value
+
+    def _key_value_to_id(
+            self, key: str, value: str
+    ) -> (str, typing.Any):
+        return self._key_to_id(key), self._value_to_id(key, value)
+
+    def _key_value_from_id(
+            self, key: str, value: str
+    ) -> (str, typing.Any):
+        return self._key_from_id(key), self._value_from_id(value)
 
     def _projection_from_list(self, fields: typing.List = None) -> typing.Dict:
         if not fields:
             return {}
-        fields = ['_id' if field is self.identifier else field for field in
+        fields = [self._key_to_id(field) for field in
                   tuple(fields)]
         projection = {field: 1 for field in fields}
         if '_id' not in fields:
@@ -57,7 +87,7 @@ class MongoTableAdapter(TableAdapter):
             raise DuplicateError('Duplicate record')
         return self._record_from_id(record)
 
-    def find_one(self, where: typing.List = None, fields: typing.List = None)\
+    def find_one(self, where: typing.List = None, fields: typing.List = None) \
             -> typing.Union[typing.Dict, None]:
         parsed_where = self._parse_conditions(where)
         record = self.collection.find_one(
@@ -101,30 +131,33 @@ class MongoTableAdapter(TableAdapter):
 
         return parsed_conditions
 
-    def _parse_condition(self, condition: typing.Union[
-        typing.List, typing.Dict]) -> typing.Dict:
+    def _parse_condition(
+            self, condition: typing.Union[typing.List, typing.Dict]) \
+            -> typing.Dict:
         if isinstance(condition, list):
             return self._parse_condition_list(condition)
         if isinstance(condition, dict):
             return self._parse_condition_dict(condition)
 
     def _parse_condition_list(self, condition: typing.List) -> typing.Dict:
-        key = '_id' if condition[0] == self.identifier else condition[0]
         if len(condition) is 2:
-            if isinstance(condition[1], dict):
-                return self._parse_condition_dict(condition[1])
-            return {key: {'$eq': condition[1]}}
+            key, value = self._key_value_to_id(condition[0], condition[1])
+            if isinstance(value, dict):
+                return self._parse_condition_dict(value)
+            return {key: {'$eq': value}}
         if len(condition) is 3:
-            if condition[1] == '=':
-                return {key: {'$eq': condition[2]}}
-            if condition[1] == '>':
-                return {key: {'$gt': condition[2]}}
-            if condition[1] == '>=':
-                return {key: {'$gte': condition[2]}}
-            if condition[1] == '<':
-                return {key: {'$lt': condition[2]}}
-            if condition[1] == '<=':
-                return {key: {'$lte': condition[2]}}
+            key, value = self._key_value_to_id(condition[0], condition[2])
+            operator = condition[1]
+            if operator == '=':
+                return {key: {'$eq': value}}
+            if operator == '>':
+                return {key: {'$gt': value}}
+            if operator == '>=':
+                return {key: {'$gte': value}}
+            if operator == '<':
+                return {key: {'$lt': value}}
+            if operator == '<=':
+                return {key: {'$lte': value}}
         raise Exception('Unhandled condition')
 
     def _parse_condition_dict(self, conditions: typing.Dict) -> typing.Dict:
