@@ -3,6 +3,7 @@ import typing
 from pymongo.errors import DuplicateKeyError
 from pymongo import ASCENDING, DESCENDING
 from bson import ObjectId
+from bson.errors import InvalidId
 
 from runehistory.app.database import DatabaseAdapter, TableAdapter
 from runehistory.app.exceptions import DuplicateError
@@ -43,8 +44,11 @@ class MongoTableAdapter(TableAdapter):
         return key
 
     def _value_to_id(self, key: str, value: typing.Any):
-        if key == self.id or key in self.ids and isinstance(value, str):
-            return ObjectId(value)
+        try:
+            if key == self.id or key in self.ids and isinstance(value, str):
+                return ObjectId(value)
+        except InvalidId:
+            raise ValueError('Invalid id: {}'.format(value))
         return value
 
     def _key_from_id(self, key: str):
