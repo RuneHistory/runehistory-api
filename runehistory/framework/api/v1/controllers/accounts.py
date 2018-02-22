@@ -22,6 +22,8 @@ def get_account(slug, account_service: AccountService) -> Response:
         return jsonify(account)
     except NotFoundError as e:
         abort(HTTPStatus.NOT_FOUND, str(e))
+    except ValueError as e:
+        abort(HTTPStatus.BAD_REQUEST, str(e))
 
 
 @accounts_bp.route('', methods=['GET'])
@@ -31,11 +33,14 @@ def get_accounts(account_service: AccountService) -> Response:
     runs_unchanged_min = request.args.get('runs_unchanged_min', type=int)
     runs_unchanged_max = request.args.get('runs_unchanged_max', type=int)
     prioritise = request.args.get('prioritise', False, type=bool)
-    accounts = cmdbus.dispatch(GetAccountsCommand(
-        account_service, last_ran_before, runs_unchanged_min,
-        runs_unchanged_max, prioritise
-    ))
-    return jsonify(accounts)
+    try:
+        accounts = cmdbus.dispatch(GetAccountsCommand(
+            account_service, last_ran_before, runs_unchanged_min,
+            runs_unchanged_max, prioritise
+        ))
+        return jsonify(accounts)
+    except ValueError as e:
+        abort(HTTPStatus.BAD_REQUEST, str(e))
 
 
 @accounts_bp.route('', methods=['POST'])
@@ -52,6 +57,8 @@ def post_account(account_service: AccountService) -> Response:
             HTTPStatus.BAD_REQUEST,
             'Account already exists: {}'.format(data['nickname'])
         )
+    except ValueError as e:
+        abort(HTTPStatus.BAD_REQUEST, str(e))
 
 
 @accounts_bp.route('/<slug>', methods=['PUT'])

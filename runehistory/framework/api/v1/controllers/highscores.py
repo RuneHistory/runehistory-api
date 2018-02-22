@@ -25,6 +25,8 @@ def post_highscore(slug: str, account_service: AccountService,
         return jsonify(highscore)
     except NotFoundError as e:
         abort(HTTPStatus.NOT_FOUND, str(e))
+    except ValueError as e:
+        abort(HTTPStatus.BAD_REQUEST, str(e))
 
 
 @highscores_bp.route('/<id>', methods=['GET'])
@@ -38,3 +40,5 @@ def get_highscore(slug: str, id: str, account_service: AccountService,
         return jsonify(highscore)
     except NotFoundError as e:
         abort(HTTPStatus.NOT_FOUND, str(e))
+    except ValueError as e:
+        abort(HTTPStatus.BAD_REQUEST, str(e))
