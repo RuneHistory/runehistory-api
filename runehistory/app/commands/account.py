@@ -8,7 +8,7 @@ from evntbus import evntbus
 from runehistory.app.exceptions import NotFoundError
 from runehistory.app.services.account import AccountService
 from runehistory.app.events.account import AccountCreatedEvent,\
-    AccountUpdatedEvent
+    AccountUpdatedEvent, GotAccountEvent, GotAccountsEvent
 
 
 class CreateAccountCommand(Command):
@@ -41,6 +41,7 @@ class GetAccountsCommand(Command):
             self.last_ran_before, self.runs_unchanged_min,
             self.runs_unchanged_max, self.prioritise
         )
+        evntbus.emit(GotAccountsEvent(accounts))
         return accounts
 
 
@@ -81,4 +82,5 @@ class GetAccountCommand(Command):
         account = self.account_service.find_one_by_slug(self.slug)
         if not account:
             raise NotFoundError('Account not found: {}'.format(self.slug))
+        evntbus.emit(GotAccountEvent(account))
         return account

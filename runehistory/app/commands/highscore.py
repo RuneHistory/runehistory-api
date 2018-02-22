@@ -6,7 +6,8 @@ from evntbus import evntbus
 from runehistory.app.exceptions import NotFoundError
 from runehistory.app.services.account import AccountService
 from runehistory.app.services.highscore import HighScoreService
-from runehistory.app.events.highscore import HighScoreCreatedEvent
+from runehistory.app.events.highscore import HighScoreCreatedEvent, \
+    GotHighScoreEvent
 
 
 class CreateHighScoreCommand(Command):
@@ -44,4 +45,5 @@ class GetHighScoreCommand(Command):
         )
         if not highscore:
             raise NotFoundError('Highscore not found: {}'.format(self.id))
+        evntbus.emit(GotHighScoreEvent(highscore))
         return highscore
