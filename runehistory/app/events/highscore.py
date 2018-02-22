@@ -8,3 +8,7 @@ class HighScoreEvent(Event):
 
 class HighScoreCreatedEvent(HighScoreEvent):
     pass
+
+
+class GotHighScoreEvent(HighScoreEvent):
+    pass

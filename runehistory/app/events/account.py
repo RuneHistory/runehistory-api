@@ -12,3 +12,12 @@ class AccountCreatedEvent(AccountEvent):
 
 class AccountUpdatedEvent(AccountEvent):
     pass
+
+
+class GotAccountEvent(AccountEvent):
+    pass
+
+
+class GotAccountsEvent(Event):
+    def __init__(self, accounts):
+        self.accounts = accounts
