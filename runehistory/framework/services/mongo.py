@@ -1,9 +1,10 @@
 import typing
 
 from pymongo.errors import DuplicateKeyError
-from pymongo import ASCENDING, DESCENDING
+from pymongo import ASCENDING, DESCENDING, MongoClient
 from bson import ObjectId
 from bson.errors import InvalidId
+from ioccontainer import provider, inject, scopes
 
 from runehistory.app.database import DatabaseAdapter, TableAdapter
 from runehistory.app.exceptions import DuplicateError
@@ -170,3 +171,14 @@ class MongoTableAdapter(TableAdapter):
             parsed_conditions.update(
                 self._parse_conditions(sub_conditions, statement))
         return parsed_conditions
+
+
+@provider(MongoClient, scopes.SINGLETON)
+def provide_mongo() -> MongoClient:
+    return MongoClient('127.0.0.1', 27017)
+
+
+@provider(MongoDatabaseAdapter, scopes.SINGLETON)
+@inject('client')
+def provide_mongo_adapter(client: MongoClient) -> MongoDatabaseAdapter:
+    return MongoDatabaseAdapter(client.test)

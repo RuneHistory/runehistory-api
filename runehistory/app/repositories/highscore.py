@@ -1,7 +1,9 @@
 import typing
 from datetime import datetime
 
-from runehistory.app.database import TableAdapter
+from ioccontainer import provider, inject
+
+from runehistory.app.database import DatabaseAdapter, TableAdapter
 from runehistory.domain.models.highscore import HighScore, Skill
 
 
@@ -54,3 +56,11 @@ class HighScoreRepository:
                   record.pop('skills').items()}
         record.update(skills)
         return HighScore(**record)
+
+
+@provider(HighScoreRepository)
+@inject('db')
+def provide_highscore_repository(
+        db: DatabaseAdapter) -> HighScoreRepository:
+    table_adapter = db.table('highscores')
+    return HighScoreRepository(table_adapter)
