@@ -4,6 +4,7 @@ from datetime import datetime
 import dateutil.parser
 from cmdbus import Command
 from evntbus import evntbus
+from ioccontainer import inject
 
 from runehistory.app.exceptions import NotFoundError
 from runehistory.app.services.account import AccountService
@@ -13,13 +14,15 @@ from runehistory.app.events.highscore import HighScoreCreatedEvent, \
 
 
 class CreateHighScoreCommand(Command):
-    def __init__(self, account_service: AccountService,
-                 highscore_service: HighScoreService, slug: str,
-                 skills: typing.Dict):
-        self.account_service = account_service
-        self.highscore_service = highscore_service
+    @inject('account_service', 'highscore_service')
+    def __init__(self, slug: str,
+                 skills: typing.Dict,
+                 account_service: AccountService = None,
+                 highscore_service: HighScoreService = None):
         self.slug = slug
         self.skills = skills
+        self.account_service = account_service
+        self.highscore_service = highscore_service
 
     def handle(self):
         account = self.account_service.find_one_by_slug(self.slug)
@@ -31,12 +34,14 @@ class CreateHighScoreCommand(Command):
 
 
 class GetHighScoreCommand(Command):
-    def __init__(self, account_service: AccountService,
-                 highscore_service: HighScoreService, slug: str, id: str):
-        self.account_service = account_service
-        self.highscore_service = highscore_service
+    @inject('account_service', 'highscore_service')
+    def __init__(self, slug: str, id: str,
+                 account_service: AccountService = None,
+                 highscore_service: HighScoreService = None):
         self.slug = slug
         self.id = id
+        self.account_service = account_service
+        self.highscore_service = highscore_service
 
     def handle(self):
         account = self.account_service.find_one_by_slug(self.slug)
@@ -52,21 +57,23 @@ class GetHighScoreCommand(Command):
 
 
 class GetHighScoresCommand(Command):
-    def __init__(self, account_service: AccountService,
-                 highscore_service: HighScoreService, slug: str,
+    @inject('account_service', 'highscore_service')
+    def __init__(self, slug: str,
                  created_after: datetime = None,
                  created_before: datetime = None,
-                 skills: typing.List = None):
+                 skills: typing.List = None,
+                 account_service: AccountService = None,
+                 highscore_service: HighScoreService = None):
         if isinstance(created_after, str):
             created_after = dateutil.parser.parse(created_after)
         if isinstance(created_before, str):
             created_before = dateutil.parser.parse(created_before)
-        self.account_service = account_service
-        self.highscore_service = highscore_service
         self.slug = slug
         self.created_after = created_after
         self.created_before = created_before
         self.skills = skills
+        self.account_service = account_service
+        self.highscore_service = highscore_service
 
     def handle(self):
         account = self.account_service.find_one_by_slug(self.slug)
