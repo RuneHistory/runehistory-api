@@ -3,8 +3,10 @@ import typing
 from flask import Flask, jsonify, Response
 from werkzeug.exceptions import default_exceptions
 from werkzeug.exceptions import HTTPException
+from ioccontainer import inject, provider
 
-from runehistory.framework.services.providers import register_service_providers
+from runehistory.app.database import DatabaseAdapter
+from runehistory.framework.services.mongo import MongoDatabaseAdapter
 from runehistory.framework.api.v1.controllers.accounts import accounts_bp
 from runehistory.framework.api.v1.controllers.highscores import highscores_bp
 from runehistory.framework.json_encoder import CustomJsonEncoder
@@ -38,6 +40,13 @@ def _json_error_handlers(app: Flask):
 def _register_blueprints(app: Flask):
     app.register_blueprint(accounts_bp, url_prefix='/v1/accounts')
     app.register_blueprint(highscores_bp, url_prefix='/v1/accounts/<slug>/highscores')
+
+
+def register_service_providers():
+    @provider(DatabaseAdapter)
+    @inject('adapter')
+    def provide_db(adapter: MongoDatabaseAdapter) -> DatabaseAdapter:
+        return adapter
 
 
 def make_app(import_name: str, **kwargs: typing.Dict) -> Flask:
