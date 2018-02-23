@@ -7,7 +7,7 @@ from cmdbus import cmdbus
 from runehistory.app.services.account import AccountService
 from runehistory.app.services.highscore import HighScoreService
 from runehistory.app.commands.highscore import CreateHighScoreCommand, \
-    GetHighScoreCommand
+    GetHighScoreCommand, GetHighScoresCommand
 from runehistory.app.exceptions import NotFoundError
 
 highscores_bp = Blueprint('highscores', __name__)
@@ -40,5 +40,24 @@ def get_highscore(slug: str, id: str, account_service: AccountService,
         return jsonify(highscore)
     except NotFoundError as e:
         abort(HTTPStatus.NOT_FOUND, str(e))
+    except ValueError as e:
+        abort(HTTPStatus.BAD_REQUEST, str(e))
+
+
+@highscores_bp.route('', methods=['GET'])
+@inject('account_service', 'highscore_service')
+def get_highscores(slug: str, account_service: AccountService,
+                   highscore_service: HighScoreService) -> Response:
+    created_after = request.args.get('created_after')
+    created_before = request.args.get('created_before')
+    skills = request.args.get('skills')
+    if skills:
+        skills = skills.split(',')
+    try:
+        highscores = cmdbus.dispatch(GetHighScoresCommand(
+            account_service, highscore_service, slug, created_after,
+            created_before, skills
+        ))
+        return jsonify(highscores)
     except ValueError as e:
         abort(HTTPStatus.BAD_REQUEST, str(e))

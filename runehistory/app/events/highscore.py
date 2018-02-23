@@ -12,3 +12,8 @@ class HighScoreCreatedEvent(HighScoreEvent):
 
 class GotHighScoreEvent(HighScoreEvent):
     pass
+
+
+class GotHighScoresEvent(Event):
+    def __init__(self, highscores):
+        self.highscore = highscores
