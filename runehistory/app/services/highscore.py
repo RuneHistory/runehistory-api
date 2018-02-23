@@ -1,15 +1,15 @@
 import typing
 from datetime import datetime
 
+from ioccontainer import provider, inject
+
 from runehistory.domain.models.account import Account
 from runehistory.domain.models.highscore import HighScore, Skill
-
-if typing.TYPE_CHECKING:
-    from runehistory.app.repositories.highscore import HighScoreRepository
+from runehistory.app.repositories.highscore import HighScoreRepository
 
 
 class HighScoreService:
-    def __init__(self, highscore_repository: 'HighScoreRepository'):
+    def __init__(self, highscore_repository: HighScoreRepository):
         self.highscore_repository = highscore_repository
 
     def create(self, account: Account, skills: typing.Dict) -> HighScore:
@@ -48,3 +48,10 @@ class HighScoreService:
         return self.highscore_repository.find(
             where, fields=fields, order=order
         )
+
+
+@provider(HighScoreService)
+@inject('repo')
+def provide_highscore_service(
+        repo: HighScoreRepository) -> HighScoreService:
+    return HighScoreService(repo)
