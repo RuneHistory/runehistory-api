@@ -22,14 +22,13 @@ class Skill:
 
 
 class HighScore:
-    def __init__(self, account_id: str, id: str = None, created_at: datetime = None,
+    def __init__(self, account_id: str, id: str = None,
+                 created_at: datetime = None,
                  **kwargs: Skill):
         self.account_id = account_id
         self.id = id
         self.created_at = created_at
         self._skills = dict()
-        if len(kwargs) is not len(SKILLS):
-            raise AttributeError('Invalid amount of skills provided')
         for name, skill in kwargs.items():
             if name not in SKILLS:
                 raise AttributeError('{key} is not a valid skill'.format(
@@ -57,11 +56,12 @@ class HighScore:
         return super().__getattribute__(item)
 
     def get_encodable(self):
+        skills = {name: skill for name, skill in self.skills.items() if
+                  skill is not None}
         return {
             'account_id': self.account_id,
             'id': self.id,
             'created_at': self.created_at.isoformat() \
                 if self.created_at else None,
-            'skills': {name: skill if skill else None for
-                       name, skill in self.skills.items()},
+            'skills': skills,
         }
