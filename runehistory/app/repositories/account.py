@@ -1,7 +1,9 @@
 import typing
 from datetime import datetime
 
-from runehistory.app.database import TableAdapter
+from ioccontainer import provider, inject
+
+from runehistory.app.database import DatabaseAdapter, TableAdapter
 from runehistory.domain.models.account import Account
 
 
@@ -72,3 +74,10 @@ class AccountRepository:
     @staticmethod
     def from_record(record: typing.Dict) -> Account:
         return Account(**record)
+
+
+@provider(AccountRepository)
+@inject('db')
+def provide_account_repository(db: DatabaseAdapter) -> AccountRepository:
+    table_adapter = db.table('accounts')
+    return AccountRepository(table_adapter)

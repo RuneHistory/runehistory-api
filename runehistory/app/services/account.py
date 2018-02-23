@@ -1,14 +1,14 @@
 import typing
 from datetime import datetime
 
-from runehistory.domain.models.account import Account
+from ioccontainer import provider, inject
 
-if typing.TYPE_CHECKING:
-    from runehistory.app.repositories.account import AccountRepository
+from runehistory.domain.models.account import Account
+from runehistory.app.repositories.account import AccountRepository
 
 
 class AccountService:
-    def __init__(self, account_repository: 'AccountRepository'):
+    def __init__(self, account_repository: AccountRepository):
         self.account_repository = account_repository
 
     def create(self, nickname: str) -> Account:
@@ -50,3 +50,9 @@ class AccountService:
 
     def update(self, account: Account, data: typing.Dict) -> bool:
         return self.account_repository.update(account, data)
+
+
+@provider(AccountService)
+@inject('repo')
+def provide_account_service(repo: AccountRepository) -> AccountService:
+    return AccountService(repo)

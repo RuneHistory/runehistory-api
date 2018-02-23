@@ -4,6 +4,7 @@ from datetime import datetime
 import dateutil.parser
 from cmdbus import Command
 from evntbus import evntbus
+from ioccontainer import inject
 
 from runehistory.app.exceptions import NotFoundError
 from runehistory.app.services.account import AccountService
@@ -12,9 +13,10 @@ from runehistory.app.events.account import AccountCreatedEvent,\
 
 
 class CreateAccountCommand(Command):
-    def __init__(self, account_service: AccountService, nickname: str):
-        self.account_service = account_service
+    @inject('account_service')
+    def __init__(self, nickname: str, account_service: AccountService = None):
         self.nickname = nickname
+        self.account_service = account_service
 
     def handle(self):
         account = self.account_service.create(self.nickname)
@@ -23,18 +25,19 @@ class CreateAccountCommand(Command):
 
 
 class GetAccountsCommand(Command):
-    def __init__(self, account_service: AccountService,
-                 last_ran_before: datetime = None,
+    @inject('account_service')
+    def __init__(self, last_ran_before: datetime = None,
                  runs_unchanged_min: int = None,
                  runs_unchanged_max: int = None,
-                 prioritise: bool = False):
+                 prioritise: bool = False,
+                 account_service: AccountService = None):
         if isinstance(last_ran_before, str):
             last_ran_before = dateutil.parser.parse(last_ran_before)
-        self.account_service = account_service
         self.last_ran_before = last_ran_before
         self.runs_unchanged_min = runs_unchanged_min
         self.runs_unchanged_max = runs_unchanged_max
         self.prioritise = prioritise
+        self.account_service = account_service
 
     def handle(self):
         accounts = self.account_service.find(
@@ -46,11 +49,13 @@ class GetAccountsCommand(Command):
 
 
 class UpdateAccountCommand(Command):
-    def __init__(self, account_service: AccountService, slug: str,
-                 data: typing.Dict):
-        self.account_service = account_service
+    @inject('account_service')
+    def __init__(self, slug: str,
+                 data: typing.Dict,
+                 account_service: AccountService = None):
         self.slug = slug
         self.data = data
+        self.account_service = account_service
 
     def handle(self):
         account = self.account_service.find_one_by_slug(self.slug)
@@ -74,9 +79,10 @@ class UpdateAccountCommand(Command):
 
 
 class GetAccountCommand(Command):
-    def __init__(self, account_service: AccountService, slug: str):
-        self.account_service = account_service
+    @inject('account_service')
+    def __init__(self, slug: str, account_service: AccountService = None):
         self.slug = slug
+        self.account_service = account_service
 
     def handle(self):
         account = self.account_service.find_one_by_slug(self.slug)

@@ -1,11 +1,8 @@
 from http import HTTPStatus
 
 from flask import Blueprint, jsonify, abort, Response, request
-from ioccontainer import inject
 from cmdbus import cmdbus
 
-from runehistory.app.services.account import AccountService
-from runehistory.app.services.highscore import HighScoreService
 from runehistory.app.commands.highscore import CreateHighScoreCommand, \
     GetHighScoreCommand, GetHighScoresCommand
 from runehistory.app.exceptions import NotFoundError
@@ -14,13 +11,11 @@ highscores_bp = Blueprint('highscores', __name__)
 
 
 @highscores_bp.route('', methods=['POST'])
-@inject('account_service', 'highscore_service')
-def post_highscore(slug: str, account_service: AccountService,
-                   highscore_service: HighScoreService) -> Response:
+def post_highscore(slug: str) -> Response:
     data = request.get_json()
     try:
         highscore = cmdbus.dispatch(CreateHighScoreCommand(
-            account_service, highscore_service, slug, data['skills']
+            slug, data['skills']
         ))
         return jsonify(highscore)
     except NotFoundError as e:
@@ -30,12 +25,10 @@ def post_highscore(slug: str, account_service: AccountService,
 
 
 @highscores_bp.route('/<id>', methods=['GET'])
-@inject('account_service', 'highscore_service')
-def get_highscore(slug: str, id: str, account_service: AccountService,
-                  highscore_service: HighScoreService) -> Response:
+def get_highscore(slug: str, id: str) -> Response:
     try:
         highscore = cmdbus.dispatch(GetHighScoreCommand(
-            account_service, highscore_service, slug, id
+            slug, id
         ))
         return jsonify(highscore)
     except NotFoundError as e:
@@ -45,9 +38,7 @@ def get_highscore(slug: str, id: str, account_service: AccountService,
 
 
 @highscores_bp.route('', methods=['GET'])
-@inject('account_service', 'highscore_service')
-def get_highscores(slug: str, account_service: AccountService,
-                   highscore_service: HighScoreService) -> Response:
+def get_highscores(slug: str) -> Response:
     created_after = request.args.get('created_after')
     created_before = request.args.get('created_before')
     skills = request.args.get('skills')
@@ -55,8 +46,7 @@ def get_highscores(slug: str, account_service: AccountService,
         skills = skills.split(',')
     try:
         highscores = cmdbus.dispatch(GetHighScoresCommand(
-            account_service, highscore_service, slug, created_after,
-            created_before, skills
+            slug, created_after, created_before, skills
         ))
         return jsonify(highscores)
     except ValueError as e:
