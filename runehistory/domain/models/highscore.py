@@ -9,9 +9,9 @@ SKILLS = ['overall', 'attack', 'defence', 'strength', 'hitpoints',
 
 class Skill:
     def __init__(self, rank: int, level: int, experience: int):
-        self.rank = rank
-        self.level = level
-        self.experience = experience
+        self.rank = int(rank)
+        self.level = int(level)
+        self.experience = int(experience)
 
     def get_encodable(self):
         return {
