@@ -9,9 +9,9 @@ SKILLS = ['overall', 'attack', 'defence', 'strength', 'hitpoints',
 
 class Skill:
     def __init__(self, rank: int, level: int, experience: int):
-        self.rank = rank
-        self.level = level
-        self.experience = experience
+        self.rank = int(rank)
+        self.level = int(level)
+        self.experience = int(experience)
 
     def get_encodable(self):
         return {
@@ -65,3 +65,13 @@ class HighScore:
                 if self.created_at else None,
             'skills': skills,
         }
+
+    def calc_xp_sum(self):
+        total = 0
+        for name, skill in self.skills.items():
+            if skill is None:
+                continue
+            if skill.experience < 1:
+                continue
+            total += skill.experience
+        return total
