@@ -2,7 +2,8 @@ from evntbus import Event
 
 
 class HighScoreEvent(Event):
-    def __init__(self, highscore):
+    def __init__(self, account, highscore):
+        self.account = account
         self.highscore = highscore
 
 
@@ -15,5 +16,6 @@ class GotHighScoreEvent(HighScoreEvent):
 
 
 class GotHighScoresEvent(Event):
-    def __init__(self, highscores):
-        self.highscore = highscores
+    def __init__(self, account, highscores):
+        self.account = account
+        self.highscores = highscores
