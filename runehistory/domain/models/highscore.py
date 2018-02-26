@@ -65,3 +65,13 @@ class HighScore:
                 if self.created_at else None,
             'skills': skills,
         }
+
+    def calc_xp_sum(self):
+        total = 0
+        for name, skill in self.skills.items():
+            if skill is None:
+                continue
+            if skill.experience < 1:
+                continue
+            total += skill.experience
+        return total

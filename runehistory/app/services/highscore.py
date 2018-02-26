@@ -49,6 +49,15 @@ class HighScoreService:
             where, fields=fields, order=order
         )
 
+    def find_by_xp_sum(self, account_id: str, xp_sum: int) -> typing.List:
+        return self.highscore_repository.find(
+            [
+                ['account_id', account_id],
+                ['xp_sum', xp_sum],
+            ],
+            limit=2
+        )
+
 
 @provider(HighScoreService)
 @inject('repo')
