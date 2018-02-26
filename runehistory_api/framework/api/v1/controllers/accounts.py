@@ -3,8 +3,8 @@ from http import HTTPStatus
 from flask import Blueprint, jsonify, abort, Response, request
 from cmdbus import cmdbus
 
-from runehistory.app.exceptions import DuplicateError, NotFoundError
-from runehistory.app.commands.account import CreateAccountCommand, \
+from runehistory_core.app.exceptions import DuplicateError, NotFoundError
+from runehistory_core.app.commands.account import CreateAccountCommand, \
     GetAccountsCommand, UpdateAccountCommand, GetAccountCommand
 
 accounts_bp = Blueprint('accounts', __name__)
