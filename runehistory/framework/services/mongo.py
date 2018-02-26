@@ -7,7 +7,7 @@ from bson.errors import InvalidId
 from ioccontainer import provider, inject, scopes
 
 from runehistory.app.database import DatabaseAdapter, TableAdapter
-from runehistory.app.exceptions import DuplicateError
+from runehistory.app.exceptions import DuplicateError, AdapterError
 
 if typing.TYPE_CHECKING:
     from pymongo.database import Database
@@ -163,7 +163,7 @@ class MongoTableAdapter(TableAdapter):
                 return {key: {'$lt': value}}
             if operator == '<=':
                 return {key: {'$lte': value}}
-        raise Exception('Unhandled condition')
+        raise AdapterError('Unhandled condition')
 
     def _parse_condition_dict(self, conditions: typing.Dict) -> typing.Dict:
         parsed_conditions = {}

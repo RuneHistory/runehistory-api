@@ -1,6 +1,14 @@
-class DuplicateError(Exception):
+class RHError(Exception):
     pass
 
 
-class NotFoundError(Exception):
+class AdapterError(Exception):
+    pass
+
+
+class DuplicateError(RHError):
+    pass
+
+
+class NotFoundError(RHError):
     pass
