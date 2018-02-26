@@ -6,7 +6,7 @@ from cmdbus import Command
 from evntbus import evntbus
 from ioccontainer import inject
 
-from runehistory.app.exceptions import NotFoundError
+from runehistory.app.exceptions import NotFoundError, RHError
 from runehistory.app.services.account import AccountService
 from runehistory.app.events.account import AccountCreatedEvent,\
     AccountUpdatedEvent, GotAccountEvent, GotAccountsEvent
@@ -73,7 +73,7 @@ class UpdateAccountCommand(Command):
 
         updated = self.account_service.update(account, update_data)
         if not updated:
-            raise Exception('Unable to update account')
+            raise RHError('Unable to update account')
         evntbus.emit(AccountUpdatedEvent(account))
         return account
 

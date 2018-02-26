@@ -44,16 +44,18 @@ class HighScoreRepository:
             'id': highscore.id,
             'created_at': highscore.created_at,
             'skills': {
-                name: {'rank': skill.rank, 'level': skill.level,
-                       'experience': skill.experience} if skill else None for
-                name, skill in highscore.skills.items()
+                name: {'rank': int(skill.rank), 'level': int(skill.level),
+                       'experience': int(skill.experience)} if skill else None
+                for name, skill in highscore.skills.items()
             },
+            'xp_sum': highscore.calc_xp_sum()
         }
 
     @staticmethod
     def from_record(record: typing.Dict) -> HighScore:
         skills = {name: Skill(**skill_dict) for name, skill_dict in
                   record.pop('skills').items()}
+        record.pop('xp_sum')
         record.update(skills)
         return HighScore(**record)
 

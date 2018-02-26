@@ -6,7 +6,7 @@ from cmdbus import Command
 from evntbus import evntbus
 from ioccontainer import inject
 
-from runehistory.app.exceptions import NotFoundError
+from runehistory.app.exceptions import RHError, NotFoundError
 from runehistory.app.services.account import AccountService
 from runehistory.app.services.highscore import HighScoreService
 from runehistory.app.events.highscore import HighScoreCreatedEvent, \
@@ -29,7 +29,25 @@ class CreateHighScoreCommand(Command):
         if not account:
             raise NotFoundError('Account not found: {}'.format(self.slug))
         highscore = self.highscore_service.create(account, self.skills)
-        evntbus.emit(HighScoreCreatedEvent(highscore))
+        evntbus.emit(HighScoreCreatedEvent(account, highscore))
+        existing = self.highscore_service.find_by_xp_sum(
+            account.id, highscore.calc_xp_sum()
+        )
+        now = datetime.utcnow()
+        new_data = {
+            'runs_unchanged': account.runs_unchanged + 1,
+            'last_run_at': now,
+        }
+        if len(existing) == 1:
+            new_data['run_changed_at'] = now
+            new_data['runs_unchanged'] = 0
+        updated = self.account_service.update_one([
+            ['id', account.id]
+        ], new_data)
+
+        if not updated:
+            raise RHError('Failed to update account')
+
         return highscore
 
 
@@ -52,7 +70,7 @@ class GetHighScoreCommand(Command):
         )
         if not highscore:
             raise NotFoundError('Highscore not found: {}'.format(self.id))
-        evntbus.emit(GotHighScoreEvent(highscore))
+        evntbus.emit(GotHighScoreEvent(account, highscore))
         return highscore
 
 
@@ -82,5 +100,5 @@ class GetHighScoresCommand(Command):
         highscores = self.highscore_service.find(
             self.created_after, self.created_before, self.skills
         )
-        evntbus.emit(GotHighScoresEvent(highscores))
+        evntbus.emit(GotHighScoresEvent(account, highscores))
         return highscores
