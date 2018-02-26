@@ -5,11 +5,11 @@ from werkzeug.exceptions import default_exceptions
 from werkzeug.exceptions import HTTPException
 from ioccontainer import inject, provider
 
-from runehistory.app.database import DatabaseAdapter
-from runehistory.framework.services.mongo import MongoDatabaseAdapter
-from runehistory.framework.api.v1.controllers.accounts import accounts_bp
-from runehistory.framework.api.v1.controllers.highscores import highscores_bp
-from runehistory.framework.json_encoder import CustomJsonEncoder
+from runehistory_core.app.database import DatabaseAdapter
+from runehistory_api.framework.services.mongo import MongoDatabaseAdapter
+from runehistory_api.framework.api.v1.controllers.accounts import accounts_bp
+from runehistory_api.framework.api.v1.controllers.highscores import highscores_bp
+from runehistory_api.framework.json_encoder import CustomJsonEncoder
 
 
 def get_json_error_handler(app: Flask):
