@@ -52,7 +52,7 @@ class GetHighScoreCommand(Command):
         )
         if not highscore:
             raise NotFoundError('Highscore not found: {}'.format(self.id))
-        evntbus.emit(GotHighScoreEvent(highscore))
+        evntbus.emit(GotHighScoreEvent(account, highscore))
         return highscore
 
 
@@ -82,5 +82,5 @@ class GetHighScoresCommand(Command):
         highscores = self.highscore_service.find(
             self.created_after, self.created_before, self.skills
         )
-        evntbus.emit(GotHighScoresEvent(highscores))
+        evntbus.emit(GotHighScoresEvent(account, highscores))
         return highscores
