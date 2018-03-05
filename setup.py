@@ -35,7 +35,8 @@ setup(
         'typing',
         'Flask==0.12.2',
         'pymongo==3.6.0',
-        'runehistory-core>=0.0.16,<1',
+        'python-dateutil>=2.6.1,<3',
+        'python-slugify==1.2.4',
     ],
     extras_require={
         'test': ['coverage', 'pytest', 'pytest-watch', 'tox']

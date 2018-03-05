@@ -6,8 +6,8 @@ from bson import ObjectId
 from bson.errors import InvalidId
 from ioccontainer import provider, inject, scopes
 
-from runehistory_core.app.database import DatabaseAdapter, TableAdapter
-from runehistory_core.app.exceptions import DuplicateError, AdapterError
+from runehistory_api.app.database import DatabaseAdapter, TableAdapter
+from runehistory_api.app.exceptions import DuplicateError, AdapterError
 
 if typing.TYPE_CHECKING:
     from pymongo.database import Database

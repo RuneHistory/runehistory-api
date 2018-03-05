@@ -5,7 +5,7 @@ from werkzeug.exceptions import default_exceptions
 from werkzeug.exceptions import HTTPException
 from ioccontainer import inject, provider
 
-from runehistory_core.app.database import DatabaseAdapter
+from runehistory_api.app.database import DatabaseAdapter
 from runehistory_api.framework.services.mongo import MongoDatabaseAdapter
 from runehistory_api.framework.api.v1.controllers.accounts import accounts_bp
 from runehistory_api.framework.api.v1.controllers.highscores import highscores_bp
