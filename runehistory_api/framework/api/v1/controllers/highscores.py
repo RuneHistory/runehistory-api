@@ -3,9 +3,9 @@ from http import HTTPStatus
 from flask import Blueprint, jsonify, abort, Response, request
 from cmdbus import cmdbus
 
-from runehistory_core.app.commands.highscore import CreateHighScoreCommand, \
+from runehistory_api.app.commands.highscore import CreateHighScoreCommand, \
     GetHighScoreCommand, GetHighScoresCommand
-from runehistory_core.app.exceptions import NotFoundError
+from runehistory_api.app.exceptions import NotFoundError
 
 highscores_bp = Blueprint('highscores', __name__)
 
