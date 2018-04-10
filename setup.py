@@ -37,6 +37,7 @@ setup(
         'pymongo==3.6.0',
         'python-dateutil>=2.6.1,<3',
         'python-slugify==1.2.4',
+        'simplejwt>=0.4.1,<1',
     ],
     extras_require={
         'test': ['coverage', 'pytest', 'pytest-watch', 'tox']
