@@ -8,6 +8,7 @@ from ioccontainer import inject, provider
 from runehistory_api.app.database import DatabaseAdapter
 from runehistory_api.framework.services.mongo import MongoDatabaseAdapter
 from runehistory_api.framework.api.v1.controllers.accounts import accounts_bp
+from runehistory_api.framework.api.v1.controllers.auth import auth_bp
 from runehistory_api.framework.api.v1.controllers.highscores import highscores_bp
 from runehistory_api.framework.json_encoder import CustomJsonEncoder
 
@@ -39,6 +40,7 @@ def _json_error_handlers(app: Flask):
 
 def _register_blueprints(app: Flask):
     app.register_blueprint(accounts_bp, url_prefix='/v1/accounts')
+    app.register_blueprint(auth_bp, url_prefix='/v1/auth')
     app.register_blueprint(highscores_bp, url_prefix='/v1/accounts/<slug>/highscores')
 
 
