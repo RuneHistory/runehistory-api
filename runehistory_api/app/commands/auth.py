@@ -1,40 +1,19 @@
-import typing
-from datetime import datetime, timedelta
-
 from cmdbus import Command
 from evntbus import evntbus
-from simplejwt.jwt import Jwt
+from ioccontainer import inject
 
+from runehistory_api.app.services.auth import JwtService
 from runehistory_api.app.events.auth import JwtCreatedEvent
 
 
 class CreateJwtCommand(Command):
-    def __init__(self):
-        pass
+    @inject('jwt_service')
+    def __init__(self, jwt_service: JwtService):
+        self.jwt_service = jwt_service
 
     def handle(self):
-        """
-        TODO:
-        1. Find the type of the user
-        2. Generate some permissions based on user type + specific user
-        3. Create + return token
-        """
-        secret = 'abc'
-        now = datetime.utcnow()
-        now_ts = int(now.timestamp())
-        expires = now + timedelta(minutes=30)
-        expires_ts = int(expires.timestamp())
-        jwt = Jwt(
-            secret,
-            {
-                'aut': {}  # Permissions
-            },
-            issuer='rh-api',
-            subject='user-id',
-            issued_at=now_ts,
-            valid_from=now_ts,
-            valid_to=expires_ts
-        )
+        # TODO: Pass user instead of type
+        jwt = self.jwt_service.make('service')
         token = jwt.encode()
         evntbus.emit(JwtCreatedEvent(jwt))
         return token
