@@ -4,7 +4,7 @@ from flask import Blueprint, jsonify, abort, Response
 from cmdbus import cmdbus
 
 from runehistory_api.app.commands.auth import CreateJwtCommand
-from runehistory_api.framework.api.v1.auth import requires_auth, user
+from runehistory_api.framework.auth import requires_auth, user
 
 auth_bp = Blueprint('auth', __name__)
 
