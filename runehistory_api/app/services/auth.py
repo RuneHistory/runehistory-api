@@ -3,22 +3,46 @@ from datetime import datetime, timedelta
 
 from ioccontainer import provider, inject
 from simplejwt.jwt import Jwt
+from passlib.hash import argon2
+
+from runehistory_api.domain.models.auth import User
+from runehistory_api.app.repositories.auth import UserRepository
+
+
+class UserService:
+    def __init__(self, user_repository: UserRepository):
+        self.user_repository = user_repository
+
+    def create(self, username: str, password: str, type: str) -> User:
+        hashed_password = argon2.hash(password)
+        user = User(username, hashed_password, type)
+        return self.user_repository.create(user)
+
+    def find_one_by_username(self, username: str) -> typing.Union[User, None]:
+        return self.find_one([['username', username]])
+
+    def find_one(self, where: typing.List = None, fields: typing.List = None)\
+            -> typing.Union[User, None]:
+        return self.user_repository.find_one(where, fields)
+
+    def validate_password(self, user: User, password: str) -> bool:
+        return argon2.verify(password, user.password)
 
 
 class PermissionService:
-    # Todo: User instead of type
-    def generate(self, user_type: str) -> typing.Dict:
-        if user_type == 'service':
+    def generate(self, user: User) -> typing.Dict:
+        if user.type == 'service':
             return {
                 'account': ['r', 'c', 'u', 'd'],
                 'highscore': ['r', 'c', 'u', 'd'],
+                'user': ['r', 'c', 'u', 'd'],
             }
-        if user_type == 'guest':
+        if user.type == 'guest':
             return {
                 'account': ['r'],
                 'highscore': ['r'],
             }
-        raise ValueError('Unknown user type: {}'.format(user_type))
+        raise ValueError('Unknown user type: {}'.format(user.type))
 
 
 class JwtService:
@@ -26,8 +50,8 @@ class JwtService:
     def __init__(self, permission_service: PermissionService):
         self.permission_service = permission_service
 
-    def make(self, user_type: str) -> Jwt:  # Todo: User instead of type
-        permissions = self.permission_service.generate(user_type)
+    def make(self, user: User) -> Jwt:
+        permissions = self.permission_service.generate(user)
 
         secret = 'abc'  # TODO: Load from config
         now = datetime.utcnow()
@@ -46,6 +70,12 @@ class JwtService:
             valid_to=expires_ts
         )
         return jwt
+
+
+@provider(UserService)
+@inject('repo')
+def provide_user_service(repo: UserRepository) -> UserService:
+    return UserService(repo)
 
 
 @provider(PermissionService)
