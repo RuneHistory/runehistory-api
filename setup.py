@@ -38,6 +38,8 @@ setup(
         'python-dateutil>=2.6.1,<3',
         'python-slugify==1.2.4',
         'simplejwt>=0.4.1,<1',
+        'argon2_cffi>=18.1.0,<19',
+        'passlib>=1.7.1,<2',
     ],
     extras_require={
         'test': ['coverage', 'pytest', 'pytest-watch', 'tox']
