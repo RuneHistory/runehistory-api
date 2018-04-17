@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from flask import Blueprint, jsonify, abort, Response, g
+from flask import Blueprint, jsonify, abort, Response
 from cmdbus import cmdbus
 
 from runehistory_api.app.commands.auth import CreateJwtCommand
