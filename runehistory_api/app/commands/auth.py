@@ -20,6 +20,16 @@ class CreateJwtCommand(Command):
         return token
 
 
+class DecodeJwtCommand(Command):
+    @inject('jwt_service')
+    def __init__(self, token: str, jwt_service: JwtService):
+        self.token = token
+        self.jwt_service = jwt_service
+
+    def handle(self):
+        return self.jwt_service.decode(self.token)
+
+
 class CreateUserCommand(Command):
     @inject('user_service')
     def __init__(self, username: str, password: str, type: str,
@@ -32,6 +42,16 @@ class CreateUserCommand(Command):
     def handle(self):
         return self.user_service.create(self.username, self.password,
                                         self.type)
+
+
+class GetUserByIdCommand(Command):
+    @inject('user_service')
+    def __init__(self, id: str, user_service: UserService):
+        self.id = id
+        self.user_service = user_service
+
+    def handle(self):
+        return self.user_service.find_one_by_id(self.id)
 
 
 class GetUserCommand(Command):

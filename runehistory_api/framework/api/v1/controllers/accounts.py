@@ -6,6 +6,7 @@ from cmdbus import cmdbus
 from runehistory_api.app.exceptions import DuplicateError, NotFoundError
 from runehistory_api.app.commands.account import CreateAccountCommand, \
     GetAccountsCommand, UpdateAccountCommand, GetAccountCommand
+from runehistory_api.framework.auth import requires_jwt
 
 accounts_bp = Blueprint('accounts', __name__)
 
@@ -24,6 +25,7 @@ def get_account(slug) -> Response:
 
 
 @accounts_bp.route('', methods=['GET'])
+@requires_jwt
 def get_accounts() -> Response:
     last_ran_before = request.args.get('last_ran_before')
     runs_unchanged_min = request.args.get('runs_unchanged_min', type=int)
