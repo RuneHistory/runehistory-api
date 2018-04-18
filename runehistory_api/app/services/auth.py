@@ -18,6 +18,9 @@ class UserService:
         user = User(username, hashed_password, type)
         return self.user_repository.create(user)
 
+    def find_one_by_id(self, id: str) -> typing.Union[User, None]:
+        return self.find_one([['id', id]])
+
     def find_one_by_username(self, username: str) -> typing.Union[User, None]:
         return self.find_one([['username', username]])
 
@@ -47,29 +50,32 @@ class PermissionService:
 
 class JwtService:
     @inject('permission_service')
-    def __init__(self, permission_service: PermissionService):
+    def __init__(self, secret: str, permission_service: PermissionService):
+        self.secret = secret
         self.permission_service = permission_service
 
     def make(self, user: User) -> Jwt:
         permissions = self.permission_service.generate(user)
 
-        secret = 'abc'  # TODO: Load from config
         now = datetime.utcnow()
         now_ts = int(now.timestamp())
         expires = now + timedelta(minutes=30)
         expires_ts = int(expires.timestamp())
         jwt = Jwt(
-            secret,
+            self.secret,
             {
                 'aut': permissions
             },
             issuer='rh-api',
-            subject='user-id',
+            subject=user.id,
             issued_at=now_ts,
             valid_from=now_ts,
             valid_to=expires_ts
         )
         return jwt
+
+    def decode(self, token: str) -> Jwt:
+        return Jwt.decode(self.secret, token)
 
 
 @provider(UserService)
@@ -85,4 +91,4 @@ def provide_permission_service() -> PermissionService:
 
 @provider(JwtService)
 def provide_jwt_service() -> JwtService:
-    return JwtService()
+    return JwtService('test_secret')
