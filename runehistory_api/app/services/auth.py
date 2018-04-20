@@ -24,7 +24,7 @@ class UserService:
     def find_one_by_username(self, username: str) -> typing.Union[User, None]:
         return self.find_one([['username', username]])
 
-    def find_one(self, where: typing.List = None, fields: typing.List = None)\
+    def find_one(self, where: typing.List = None, fields: typing.List = None) \
             -> typing.Union[User, None]:
         return self.user_repository.find_one(where, fields)
 
@@ -36,16 +36,25 @@ class PermissionService:
     def generate(self, user: User) -> typing.Dict:
         if user.type == 'service':
             return {
-                'account': ['r', 'c', 'u', 'd'],
-                'highscore': ['r', 'c', 'u', 'd'],
-                'user': ['r', 'c', 'u', 'd'],
+                'accounts': ['r', 'c', 'u', 'd'],
+                'highscores': ['r', 'c', 'u', 'd'],
+                'users': ['r', 'c', 'u', 'd'],
             }
         if user.type == 'guest':
             return {
-                'account': ['r'],
-                'highscore': ['r'],
+                'accounts': ['r'],
+                'highscores': ['r'],
             }
         raise ValueError('Unknown user type: {}'.format(user.type))
+
+    def check_permission(self, scope: str, permissions: dict,
+                         required: str) -> bool:
+        scope_perms = permissions.get(scope, None)
+        if not scope_perms:
+            return False
+        if '*' not in scope_perms and required not in scope_perms:
+            return False
+        return True
 
 
 class JwtService:

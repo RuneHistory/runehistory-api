@@ -1,9 +1,10 @@
-from cmdbus import Command
+from cmdbus import Command, cmdbus
 from evntbus import evntbus
 from ioccontainer import inject
 
 from runehistory_api.domain.models.auth import User
-from runehistory_api.app.services.auth import JwtService, UserService
+from runehistory_api.app.services.auth import JwtService, UserService, \
+    PermissionService
 from runehistory_api.app.events.auth import JwtCreatedEvent
 
 
@@ -15,9 +16,8 @@ class CreateJwtCommand(Command):
 
     def handle(self):
         jwt = self.jwt_service.make(self.user)
-        token = jwt.encode()
         evntbus.emit(JwtCreatedEvent(jwt))
-        return token
+        return jwt
 
 
 class DecodeJwtCommand(Command):
@@ -73,3 +73,44 @@ class ValidateUserPasswordCommand(Command):
 
     def handle(self):
         return self.user_service.validate_password(self.user, self.password)
+
+
+class GeneratePermissionsCommand(Command):
+    @inject('permission_service')
+    def __init__(self, user: User, permission_service: PermissionService):
+        self.user = user
+        self.permission_service = permission_service
+
+    def handle(self):
+        return self.permission_service.generate(self.user)
+
+
+class CheckPermissionCommand(Command):
+    @inject('permission_service')
+    def __init__(self, scope: str, permissions: dict, required: str,
+                 permission_service: PermissionService):
+        self.scope = scope
+        self.permissions = permissions
+        self.required = required
+        self.permission_service = permission_service
+
+    def handle(self):
+        return self.permission_service.check_permission(
+            self.scope,
+            self.permissions,
+            self.required
+        )
+
+
+class CheckUserPermissionCommand(Command):
+    @inject('permission_service')
+    def __init__(self, user: User, scope: str, required: str):
+        self.user = user
+        self.scope = scope
+        self.required = required
+
+    def handle(self):
+        permissions = cmdbus.dispatch(GeneratePermissionsCommand(self.user))
+        return cmdbus.dispatch(
+            CheckPermissionCommand(self.scope, permissions, self.required)
+        )

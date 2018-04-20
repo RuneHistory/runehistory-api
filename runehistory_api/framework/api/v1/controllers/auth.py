@@ -2,6 +2,7 @@ from http import HTTPStatus
 
 from flask import Blueprint, jsonify, abort, Response
 from cmdbus import cmdbus
+from simplejwt.jwt import Jwt
 
 from runehistory_api.app.commands.auth import CreateJwtCommand
 from runehistory_api.framework.auth import requires_auth, user
@@ -20,9 +21,9 @@ def authenticate() -> Response:
     5. API processes request
     """
     try:
-        token = cmdbus.dispatch(CreateJwtCommand(user()))
+        jwt = cmdbus.dispatch(CreateJwtCommand(user()))  # type: Jwt
         return jsonify({
-            'token': token
+            'token': jwt.encode()
         })
     except ValueError as e:
         abort(HTTPStatus.BAD_REQUEST, str(e))
