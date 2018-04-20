@@ -6,12 +6,14 @@ from cmdbus import cmdbus
 from runehistory_api.app.exceptions import DuplicateError, NotFoundError
 from runehistory_api.app.commands.account import CreateAccountCommand, \
     GetAccountsCommand, UpdateAccountCommand, GetAccountCommand
-from runehistory_api.framework.auth import requires_jwt
+from runehistory_api.framework.auth import requires_jwt, requires_permission
 
 accounts_bp = Blueprint('accounts', __name__)
 
 
 @accounts_bp.route('/<slug>', methods=['GET'])
+@requires_jwt
+@requires_permission('accounts', 'r')
 def get_account(slug) -> Response:
     try:
         account = cmdbus.dispatch(
@@ -26,6 +28,7 @@ def get_account(slug) -> Response:
 
 @accounts_bp.route('', methods=['GET'])
 @requires_jwt
+@requires_permission('accounts', 'r')
 def get_accounts() -> Response:
     last_ran_before = request.args.get('last_ran_before')
     runs_unchanged_min = request.args.get('runs_unchanged_min', type=int)
@@ -42,6 +45,8 @@ def get_accounts() -> Response:
 
 
 @accounts_bp.route('', methods=['POST'])
+@requires_jwt
+@requires_permission('accounts', 'c')
 def post_account() -> Response:
     data = request.get_json()
     try:
@@ -59,6 +64,8 @@ def post_account() -> Response:
 
 
 @accounts_bp.route('/<slug>', methods=['PUT'])
+@requires_jwt
+@requires_permission('accounts', 'u')
 def put_account(slug) -> Response:
     body = request.get_json()
     try:
