@@ -68,7 +68,7 @@ class JwtService:
 
         now = datetime.utcnow()
         now_ts = int(now.timestamp())
-        expires = now + timedelta(minutes=30)
+        expires = now + timedelta(minutes=10)
         expires_ts = int(expires.timestamp())
         jwt = Jwt(
             self.secret,
