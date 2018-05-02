@@ -17,6 +17,8 @@ from runehistory_api.app.services.auth import PermissionService
 
 def check_auth(username: str, password: str):
     auth_user = cmdbus.dispatch(GetUserCommand(username))
+    if not auth_user:
+        return None
     is_valid = cmdbus.dispatch(ValidateUserPasswordCommand(
         auth_user,
         password
