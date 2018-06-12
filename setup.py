@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 github = 'https://github.com/runehistory/runehistory-api'
-version = '0.0.4'
+version = '0.0.5'
 
 setup(
     name='runehistory-api',
@@ -40,6 +40,7 @@ setup(
         'simplejwt>=1.0.1,<2',
         'argon2_cffi>=18.1.0,<19',
         'passlib>=1.7.1,<2',
+        'flask-cors>=3.0.4,<4',
     ],
     extras_require={
         'test': ['coverage', 'pytest', 'pytest-watch', 'tox']
