@@ -1,6 +1,7 @@
 import typing
 
 from flask import Flask, jsonify, Response
+from flask_cors import CORS
 from werkzeug.exceptions import default_exceptions
 from werkzeug.exceptions import HTTPException
 from ioccontainer import inject, provider
@@ -53,6 +54,7 @@ def register_service_providers():
 
 def make_app(import_name: str, **kwargs: typing.Dict) -> Flask:
     app = Flask(import_name, **kwargs)
+    CORS(app)
     _json_error_handlers(app)
     register_service_providers()
     _register_blueprints(app)
