@@ -98,7 +98,7 @@ class GetHighScoresCommand(Command):
         if not account:
             raise NotFoundError('Account not found: {}'.format(self.slug))
         highscores = self.highscore_service.find(
-            self.created_after, self.created_before, self.skills
+            account.id, self.created_after, self.created_before, self.skills
         )
         evntbus.emit(GotHighScoresEvent(account, highscores))
         return highscores

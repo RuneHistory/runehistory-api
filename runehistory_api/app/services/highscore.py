@@ -29,12 +29,14 @@ class HighScoreService:
             -> typing.Union[HighScore, None]:
         return self.highscore_repository.find_one(where, fields)
 
-    def find(self, created_after: datetime = None,
+    def find(self, account_id: str = None, created_after: datetime = None,
              created_before: datetime = None,
              skills: typing.List = None) -> typing.List:
         where = []
         order = []
         fields = None
+        if account_id:
+            where.append(['account_id', '=', account_id])
         if created_after:
             where.append(['created_at', '>=', created_after])
         if created_before:
