@@ -92,13 +92,20 @@ class MongoTableAdapter(TableAdapter):
             raise DuplicateError('Duplicate record')
         return self._record_from_id(record)
 
-    def find_one(self, where: typing.List = None, fields: typing.List = None) \
+    def find_one(self, where: typing.List = None, fields: typing.List = None,
+                 offset: int = None, order: typing.List = None) \
             -> typing.Union[typing.Dict, None]:
         parsed_where = self._parse_conditions(where)
-        record = self.collection.find_one(
-            parsed_where,
-            projection=fields
-        )
+        record = self.collection.find_one(parsed_where, fields)
+        if offset is not None:
+            record = record.skip(offset)
+        if order is not None:
+            updated_order = []
+            for item in order:
+                direction = DESCENDING if item[1] is 'desc' else ASCENDING
+                updated_order.append((item[0], direction))
+            record = record.sort(updated_order)
+
         if record is None:
             return None
         return self._record_from_id(record)

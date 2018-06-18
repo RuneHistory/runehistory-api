@@ -22,8 +22,9 @@ class HighScoreRepository:
         record = self.highscores.insert(type(self).to_record(highscore))
         return type(self).from_record(record)
 
-    def find_one(self, where: typing.List = None, fields: typing.List = None) \
-            -> typing.Union[HighScore, None]:
+    def find_one(self, where: typing.List = None, fields: typing.List = None,
+                 offset: int = None, order: typing.List = None
+                 ) -> typing.Union[HighScore, None]:
         record = self.highscores.find_one(where, fields)
         if record is None:
             return None
