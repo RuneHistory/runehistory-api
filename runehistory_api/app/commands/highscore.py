@@ -102,3 +102,32 @@ class GetHighScoresCommand(Command):
         )
         evntbus.emit(GotHighScoresEvent(account, highscores))
         return highscores
+
+
+class GetLatestHighScoreCommand(Command):
+    @inject('account_service', 'highscore_service')
+    def __init__(self, slug: str,
+                 created_after: datetime = None,
+                 created_before: datetime = None,
+                 skills: typing.List = None,
+                 account_service: AccountService = None,
+                 highscore_service: HighScoreService = None):
+        if isinstance(created_after, str):
+            created_after = dateutil.parser.parse(created_after)
+        if isinstance(created_before, str):
+            created_before = dateutil.parser.parse(created_before)
+        self.slug = slug
+        self.created_after = created_after
+        self.created_before = created_before
+        self.skills = skills
+        self.account_service = account_service
+        self.highscore_service = highscore_service
+
+    def handle(self):
+        account = self.account_service.find_one_by_slug(self.slug)
+        if not account:
+            raise NotFoundError('Account not found: {}'.format(self.slug))
+        highscore = self.highscore_service.find_latest(
+            account.id, self.created_after, self.created_before, self.skills
+        )
+        return highscore
