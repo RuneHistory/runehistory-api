@@ -51,6 +51,9 @@ class AccountService:
     def update(self, account: Account, data: typing.Dict) -> bool:
         return self.account_repository.update(account, data)
 
+    def count(self) -> int:
+        return self.account_repository.count()
+
 
 @provider(AccountService)
 @inject('repo')

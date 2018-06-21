@@ -25,9 +25,10 @@ class HighScoreService:
             ['id', id],
         ])
 
-    def find_one(self, where: typing.List = None, fields: typing.List = None) \
-            -> typing.Union[HighScore, None]:
-        return self.highscore_repository.find_one(where, fields)
+    def find_one(self, where: typing.List = None, fields: typing.List = None,
+                 offset: int = None, order: typing.List = None
+                 ) -> typing.Union[HighScore, None]:
+        return self.highscore_repository.find_one(where, fields, offset, order)
 
     def find(self, account_id: str = None, created_after: datetime = None,
              created_before: datetime = None,
@@ -59,6 +60,33 @@ class HighScoreService:
             ],
             limit=2
         )
+
+    def find_latest(self, account_id: str = None,
+                    created_after: datetime = None,
+                    created_before: datetime = None,
+                    skills: typing.List = None
+                    ) -> typing.Union[HighScore, None]:
+        where = []
+        order = []
+        fields = None
+        if account_id:
+            where.append(['account_id', '=', account_id])
+        if created_after:
+            where.append(['created_at', '>=', created_after])
+        if created_before:
+            where.append(['created_at', '<', created_before])
+        order.append(['created_at', 'desc'])
+        if skills:
+            fields = ['id', 'experience_hash', 'account_id', 'created_at',
+                      'updated_at']
+            for skill in skills:
+                fields.append('skills.{}'.format(skill))
+        return self.highscore_repository.find_one(
+            where, fields=fields, order=order
+        )
+
+    def count(self) -> int:
+        return self.highscore_repository.count()
 
 
 @provider(HighScoreService)

@@ -4,7 +4,7 @@ from flask import Blueprint, jsonify, abort, Response, request
 from cmdbus import cmdbus
 
 from runehistory_api.app.commands.highscore import CreateHighScoreCommand, \
-    GetHighScoreCommand, GetHighScoresCommand
+    GetHighScoreCommand, GetHighScoresCommand, GetLatestHighScoreCommand
 from runehistory_api.app.exceptions import NotFoundError
 from runehistory_api.framework.auth import requires_jwt, requires_permission
 
@@ -23,6 +23,24 @@ def post_highscore(slug: str) -> Response:
         return jsonify(highscore)
     except NotFoundError as e:
         abort(HTTPStatus.NOT_FOUND, str(e))
+    except ValueError as e:
+        abort(HTTPStatus.BAD_REQUEST, str(e))
+
+
+@highscores_bp.route('/latest', methods=['GET'])
+@requires_jwt
+@requires_permission('highscores', 'r')
+def get_latest_highscore(slug: str) -> Response:
+    created_after = request.args.get('created_after')
+    created_before = request.args.get('created_before')
+    skills = request.args.get('skills')
+    if skills:
+        skills = skills.split(',')
+    try:
+        highscore = cmdbus.dispatch(GetLatestHighScoreCommand(
+            slug, created_after, created_before, skills
+        ))
+        return jsonify(highscore)
     except ValueError as e:
         abort(HTTPStatus.BAD_REQUEST, str(e))
 

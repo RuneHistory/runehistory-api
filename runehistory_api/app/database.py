@@ -12,12 +12,15 @@ class TableAdapter:
 
     def insert(self, data: typing.Any) -> typing.Dict: pass
 
-    def find_one(self, where: typing.List = None, fields: typing.List = None
+    def find_one(self, where: typing.List = None, fields: typing.List = None,
+                 offset: int = None, order: typing.List = None
                  ) -> typing.Union[typing.Dict, None]: pass
 
     def find(self, where: typing.List = None, fields: typing.List = None,
              limit: int = 100, offset: int = None,
              order: typing.List = None
              ) -> typing.List: pass
+
+    def count(self, where: typing.List = None) -> int: pass
 
     def update_one(self, where: typing.List, data: typing.Dict) -> bool: pass

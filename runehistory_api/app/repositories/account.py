@@ -58,6 +58,9 @@ class AccountRepository:
             return False
         return True
 
+    def count(self) -> int:
+        return self.accounts.count()
+
     @staticmethod
     def to_record(account: Account) -> typing.Dict:
         return {
