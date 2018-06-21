@@ -85,6 +85,9 @@ class HighScoreService:
             where, fields=fields, order=order
         )
 
+    def count(self) -> int:
+        return self.highscore_repository.count()
+
 
 @provider(HighScoreService)
 @inject('repo')

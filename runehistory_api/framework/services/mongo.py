@@ -127,6 +127,11 @@ class MongoTableAdapter(TableAdapter):
             results = results.sort(updated_order)
         return [self._record_from_id(record) for record in results]
 
+    def count(self, where: typing.List = None) -> int:
+        parsed_where = self._parse_conditions(where)
+
+        return self.collection.count(parsed_where)
+
     def update_one(self, where: typing.List, data: typing.Dict) -> bool:
         parsed_where = self._parse_conditions(where)
         parsed_data = {'$set': data}

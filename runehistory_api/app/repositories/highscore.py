@@ -38,6 +38,9 @@ class HighScoreRepository:
         return [highscore for highscore in
                 map(type(self).from_record, results)]
 
+    def count(self) -> int:
+        return self.highscores.count()
+
     @staticmethod
     def to_record(highscore: HighScore) -> typing.Dict:
         return {

@@ -21,4 +21,6 @@ class TableAdapter:
              order: typing.List = None
              ) -> typing.List: pass
 
+    def count(self, where: typing.List = None) -> int: pass
+
     def update_one(self, where: typing.List, data: typing.Dict) -> bool: pass
