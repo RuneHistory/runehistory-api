@@ -6,6 +6,7 @@ from werkzeug.exceptions import default_exceptions
 from werkzeug.exceptions import HTTPException
 from ioccontainer import inject, provider
 
+from runehistory_api.app.config import Config
 from runehistory_api.app.database import DatabaseAdapter
 from runehistory_api.framework.services.mongo import MongoDatabaseAdapter
 from runehistory_api.framework.api.v1.controllers.accounts import accounts_bp
@@ -48,6 +49,10 @@ def _register_blueprints(app: Flask):
 
 
 def register_service_providers():
+    @provider(Config)
+    def provide_config() -> Config:
+        return Config('rhapi.yml')
+
     @provider(DatabaseAdapter)
     @inject('adapter')
     def provide_db(adapter: MongoDatabaseAdapter) -> DatabaseAdapter:

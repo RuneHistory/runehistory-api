@@ -36,3 +36,4 @@ pip-delete-this-directory.txt
 .pytest_cache
 .tox
 htmlcov
+rhapi.yml

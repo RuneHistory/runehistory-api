@@ -6,6 +6,7 @@ from bson import ObjectId
 from bson.errors import InvalidId
 from ioccontainer import provider, inject, scopes
 
+from runehistory_api.app.config import Config
 from runehistory_api.app.database import DatabaseAdapter, TableAdapter
 from runehistory_api.app.exceptions import DuplicateError, AdapterError
 
@@ -185,8 +186,9 @@ class MongoTableAdapter(TableAdapter):
 
 
 @provider(MongoClient, scopes.SINGLETON)
-def provide_mongo() -> MongoClient:
-    return MongoClient('127.0.0.1', 27017)
+@inject('config')
+def provide_mongo(config: Config) -> MongoClient:
+    return MongoClient(config.db_host, config.db_port)
 
 
 @provider(MongoDatabaseAdapter, scopes.SINGLETON)

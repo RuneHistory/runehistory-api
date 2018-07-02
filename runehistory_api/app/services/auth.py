@@ -7,6 +7,7 @@ from passlib.hash import argon2
 
 from runehistory_api.domain.models.auth import User
 from runehistory_api.app.repositories.auth import UserRepository
+from runehistory_api.app.config import Config
 
 
 class UserService:
@@ -99,5 +100,6 @@ def provide_permission_service() -> PermissionService:
 
 
 @provider(JwtService)
-def provide_jwt_service() -> JwtService:
-    return JwtService('test_secret')
+@inject('config')
+def provide_jwt_service(config: Config) -> JwtService:
+    return JwtService(config.secret)
