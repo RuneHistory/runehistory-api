@@ -26,3 +26,7 @@ class Config:
     @property
     def db_port(self) -> int:
         return self.cfg.get('db_port', 27017)
+
+    @property
+    def db_name(self) -> int:
+        return self.cfg.get('db_name', 'runehistory')

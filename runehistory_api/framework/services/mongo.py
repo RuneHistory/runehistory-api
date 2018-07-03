@@ -194,6 +194,6 @@ def provide_mongo(config: Config) -> MongoClient:
 
 
 @provider(MongoDatabaseAdapter, scopes.SINGLETON)
-@inject('client')
-def provide_mongo_adapter(client: MongoClient) -> MongoDatabaseAdapter:
-    return MongoDatabaseAdapter(client.test)
+@inject('client', 'config')
+def provide_mongo_adapter(client: MongoClient, config: Config) -> MongoDatabaseAdapter:
+    return MongoDatabaseAdapter(client[config.db_name])
