@@ -16,6 +16,10 @@ class Config:
         return self.cfg.get('secret')
 
     @property
+    def db_connection_string(self) -> str:
+        return self.cfg.get('db_connection_string')
+
+    @property
     def db_host(self) -> str:
         return self.cfg.get('db_host', '127.0.0.1')
 

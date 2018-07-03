@@ -41,6 +41,7 @@ setup(
         'argon2_cffi>=18.1.0,<19',
         'passlib>=1.7.1,<2',
         'flask-cors>=3.0.4,<4',
+        'dnspython>=1.15.0,<2',
     ],
     extras_require={
         'test': ['coverage', 'pytest', 'pytest-watch', 'tox']

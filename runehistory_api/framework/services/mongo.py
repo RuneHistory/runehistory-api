@@ -188,6 +188,8 @@ class MongoTableAdapter(TableAdapter):
 @provider(MongoClient, scopes.SINGLETON)
 @inject('config')
 def provide_mongo(config: Config) -> MongoClient:
+    if config.db_connection_string:
+        return MongoClient(config.db_connection_string)
     return MongoClient(config.db_host, config.db_port)
 
 
