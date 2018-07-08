@@ -43,7 +43,7 @@ class PermissionService:
             }
         if user.type == 'guest':
             return {
-                'accounts': ['r'],
+                'accounts': ['r', 'c'],
                 'highscores': ['r'],
             }
         raise ValueError('Unknown user type: {}'.format(user.type))
