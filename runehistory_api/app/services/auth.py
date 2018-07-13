@@ -66,11 +66,11 @@ class JwtService:
 
     def make(self, user: User) -> Jwt:
         permissions = self.permission_service.generate(user)
-
+        epoch = datetime(1970, 1, 1, 0, 0, 0)
         now = datetime.utcnow()
-        now_ts = int(now.timestamp())
+        now_ts = int((now - epoch).total_seconds())
         expires = now + timedelta(minutes=10)
-        expires_ts = int(expires.timestamp())
+        expires_ts = int((expires - epoch).total_seconds())
         jwt = Jwt(
             self.secret,
             {

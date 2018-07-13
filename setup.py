@@ -37,7 +37,7 @@ setup(
         'pymongo==3.6.0',
         'python-dateutil>=2.6.1,<3',
         'python-slugify==1.2.4',
-        'simplejwt>=1.0.1,<2',
+        'simplejwt>=2.0.0,<3',
         'argon2_cffi>=18.1.0,<19',
         'passlib>=1.7.1,<2',
         'flask-cors>=3.0.4,<4',
