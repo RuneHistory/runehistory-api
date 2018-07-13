@@ -30,7 +30,7 @@ class AccountRepository:
         return AccountRepository.from_record(record)
 
     def find(self, where: typing.List = None, fields: typing.List = None,
-             limit: int = 100, offset: int = None,
+             limit: int = None, offset: int = None,
              order: typing.List = None
              ) -> typing.List:
         results = self.accounts.find(where, fields, limit, offset, order)

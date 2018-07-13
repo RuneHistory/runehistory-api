@@ -111,12 +111,14 @@ class MongoTableAdapter(TableAdapter):
         return self._record_from_id(record)
 
     def find(self, where: typing.List = None, fields: typing.List = None,
-             limit: int = 100, offset: int = None,
+             limit: int = None, offset: int = None,
              order: typing.List = None
              ) -> typing.List:
         parsed_where = self._parse_conditions(where)
 
-        results = self.collection.find(parsed_where, fields).limit(limit)
+        results = self.collection.find(parsed_where, fields)
+        if limit is not None:
+            results = results.limit(limit)
         if offset is not None:
             results = results.skip(offset)
         if order is not None:
