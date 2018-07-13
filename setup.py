@@ -42,6 +42,7 @@ setup(
         'passlib>=1.7.1,<2',
         'flask-cors>=3.0.4,<4',
         'dnspython>=1.15.0,<2',
+        'pyyaml>=3.12.0,<4',
     ],
     extras_require={
         'test': ['coverage', 'pytest', 'pytest-watch', 'tox']
