@@ -1,6 +1,7 @@
 from cmdbus import Command, cmdbus
 from evntbus import evntbus
 from ioccontainer import inject
+from simplejwt.jwt import Jwt
 
 from runehistory_api.domain.models.auth import User
 from runehistory_api.app.services.auth import JwtService, UserService, \
@@ -114,3 +115,25 @@ class CheckUserPermissionCommand(Command):
         return cmdbus.dispatch(
             CheckPermissionCommand(self.scope, permissions, self.required)
         )
+
+
+class GetUserFromJwtCommand(Command):
+    @inject('jwt_service')
+    def __init__(self, jwt: Jwt, jwt_service: JwtService = None):
+        self.jwt = jwt
+        self.jwt_service = jwt_service
+
+    def handle(self):
+        user_id = self.jwt_service.user_id_from_subject(self.jwt.subject)
+        return cmdbus.dispatch(GetUserByIdCommand(user_id))
+
+
+class ValidateJwtContentCommand(Command):
+    @inject('jwt_service')
+    def __init__(self, user: User, jwt: Jwt, jwt_service: JwtService):
+        self.user = user
+        self.jwt = jwt
+        self.jwt_service = jwt_service
+
+    def handle(self):
+        return self.jwt_service.validate_content(self.user, self.jwt)

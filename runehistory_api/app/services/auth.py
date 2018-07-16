@@ -77,12 +77,26 @@ class JwtService:
                 'aut': permissions
             },
             issuer='rh-api',
-            subject=user.id,
+            subject=self.generate_subject(user),
             issued_at=now_ts,
             valid_from=now_ts,
             valid_to=expires_ts
         )
         return jwt
+
+    def generate_subject(self, user: User):
+        return '{}-{}_{}'.format(
+            user.username,
+            user.type,
+            user.id
+        )
+
+    def user_id_from_subject(self, subject: str):
+        return subject.split('_')[-1]
+
+    def validate_content(self, user: User, jwt: Jwt):
+        new_jwt = self.make(user)
+        return jwt.compare(new_jwt)
 
     def decode(self, token: str) -> Jwt:
         return Jwt.decode(self.secret, token)

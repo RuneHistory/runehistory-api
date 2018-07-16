@@ -10,8 +10,8 @@ from ioccontainer import inject
 
 from runehistory_api.domain.models.auth import User
 from runehistory_api.app.commands.auth import GetUserCommand, \
-    ValidateUserPasswordCommand, DecodeJwtCommand, GetUserByIdCommand, \
-    CreateJwtCommand, CheckUserPermissionCommand
+    ValidateUserPasswordCommand, DecodeJwtCommand, ValidateJwtContentCommand, \
+    CheckUserPermissionCommand, GetUserFromJwtCommand
 from runehistory_api.app.services.auth import PermissionService
 
 
@@ -19,6 +19,8 @@ def check_auth(username: str, password: str):
     auth_user = cmdbus.dispatch(GetUserCommand(username))
     if not auth_user:
         return None
+    if auth_user.type == 'guest':
+        return auth_user
     is_valid = cmdbus.dispatch(ValidateUserPasswordCommand(
         auth_user,
         password
@@ -32,6 +34,7 @@ def check_jwt(token: str) -> typing.Union[Jwt, None]:
     except InvalidTokenError:
         return None
     if not jwt.valid():
+        # TODO: TokenExpiredError
         return None
     return jwt
 
@@ -76,11 +79,13 @@ def requires_jwt(f):
         jwt = check_jwt(token)
         if not jwt:
             raise Unauthorized('Invalid token')
-        auth_user = cmdbus.dispatch(GetUserByIdCommand(jwt.subject))
+        auth_user = cmdbus.dispatch(GetUserFromJwtCommand(jwt))
         if not auth_user:
             raise Unauthorized('Invalid token')
-        new_jwt = cmdbus.dispatch(CreateJwtCommand(auth_user))  # type: Jwt
-        if not jwt.compare(new_jwt):
+        content_valid = cmdbus.dispatch(
+            ValidateJwtContentCommand(auth_user, jwt)
+        )
+        if not content_valid:
             raise Unauthorized('Invalid token')
         g.jwt = jwt
         g.user = auth_user

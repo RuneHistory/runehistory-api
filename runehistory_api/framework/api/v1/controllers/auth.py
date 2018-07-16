@@ -13,13 +13,6 @@ auth_bp = Blueprint('auth', __name__)
 @auth_bp.route('/token', methods=['GET'])
 @requires_auth
 def authenticate() -> Response:
-    """
-    1. Client gets token string and stores it in session/cookie
-    2. Every request from then on WITH this in the session will include "Authorization: Bearer {token}" header
-    3. API validates the jwt
-    4. API validates permissions in the jwt
-    5. API processes request
-    """
     try:
         jwt = cmdbus.dispatch(CreateJwtCommand(user()))  # type: Jwt
         return jsonify({
