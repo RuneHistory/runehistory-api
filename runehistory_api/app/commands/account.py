@@ -2,12 +2,13 @@ import typing
 from datetime import datetime
 
 import dateutil.parser
-from cmdbus import Command
+from cmdbus import cmdbus, Command
 from evntbus import evntbus
 from ioccontainer import inject
 
 from runehistory_api.app.exceptions import NotFoundError, RHError
 from runehistory_api.app.services.account import AccountService
+from runehistory_api.app.commands.highscore import GetOsrsHighScoreCommand
 from runehistory_api.app.events.account import AccountCreatedEvent,\
     AccountUpdatedEvent, GotAccountEvent, GotAccountsEvent
 
@@ -19,6 +20,9 @@ class CreateAccountCommand(Command):
         self.account_service = account_service
 
     def handle(self):
+        highscore = cmdbus.dispatch(GetOsrsHighScoreCommand(self.nickname))
+        if not highscore:
+            raise ValueError('Account does not exist')
         account = self.account_service.create(self.nickname)
         evntbus.emit(AccountCreatedEvent(account))
         return account

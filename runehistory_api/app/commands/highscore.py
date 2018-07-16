@@ -5,6 +5,7 @@ import dateutil.parser
 from cmdbus import Command
 from evntbus import evntbus
 from ioccontainer import inject
+from pyrunehistory.osrs import get_plain_highscore
 
 from runehistory_api.app.exceptions import RHError, NotFoundError
 from runehistory_api.app.services.account import AccountService
@@ -131,3 +132,16 @@ class GetLatestHighScoreCommand(Command):
             account.id, self.created_after, self.created_before, self.skills
         )
         return highscore
+
+
+class GetOsrsHighScoreCommand(Command):
+    @inject('account_service', 'highscore_service')
+    def __init__(self, nickname: str):
+        self.nickname = nickname
+
+    def handle(self):
+        try:
+            return get_plain_highscore(self.nickname)
+        except IOError:
+            # Using IOError as requests HTTPError eventually extends this
+            return None
