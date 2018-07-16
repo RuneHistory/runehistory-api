@@ -2,7 +2,9 @@ argh==0.26.2
 argon2-cffi==18.1.0
 atomicwrites==1.1.5
 attrs==18.1.0
+certifi==2018.4.16
 cffi==1.11.5
+chardet==3.0.4
 click==6.7
 cmdbus==1.0.1
 colorama==0.3.9
@@ -12,6 +14,7 @@ docopt==0.6.2
 evntbus==1.2.1
 Flask==0.12.2
 Flask-Cors==3.0.6
+idna==2.7
 ioccontainer==1.0.5
 itsdangerous==0.24
 Jinja2==2.10
@@ -23,17 +26,20 @@ pluggy==0.6.0
 py==1.5.4
 pycparser==2.18
 pymongo==3.6.0
+pyrunehistory==1.1.1
 pytest==3.6.2
 pytest-watch==4.2.0
 python-dateutil==2.7.3
 python-slugify==1.2.4
-PyYAML==3.12
--e git+git@github.com:RuneHistory/runehistory-api.git@ad134c9c43aae77472dd871b8b9c5ea981838035#egg=runehistory_api
-simplejwt==1.0.2
+PyYAML==3.13
+requests==2.19.1
+-e git+git@github.com:RuneHistory/runehistory-api.git@7d14cc12cc2c896ccc9ccca9545a7908feb58a16#egg=runehistory_api
+simplejwt==2.0.0
 six==1.11.0
 tox==3.0.0
 typing==3.6.4
 Unidecode==1.0.22
+urllib3==1.23
 virtualenv==16.0.0
 watchdog==0.8.3
 Werkzeug==0.14.1
