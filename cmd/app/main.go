@@ -1,7 +1,9 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
+	"github.com/runehistory/runehistory-api/internal"
 	"github.com/runehistory/runehistory-api/internal/transport/http_transport"
 	"os"
 	"os/signal"
@@ -15,7 +17,14 @@ func main() {
 	errCh := make(chan error)
 	go HandleShutdownSignal(shutdownCh)
 
-	s := http_transport.NewServer(":8080")
+	// start mysql etc
+	var db *sql.DB
+	s := http_transport.NewServer("127.0.0.1:8080")
+
+	// initialise the app
+	internal.Init(s.Router, db)
+
+	// start publicly accessible things / websocket servers
 	go s.Start(wg, shutdownCh, errCh)
 
 	select {

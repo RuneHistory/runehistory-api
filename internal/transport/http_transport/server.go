@@ -2,6 +2,7 @@ package http_transport
 
 import (
 	"context"
+	"fmt"
 	"github.com/go-chi/chi"
 	"net"
 	"net/http"
@@ -11,7 +12,7 @@ import (
 
 type Server struct {
 	httpServer *http.Server
-	router     chi.Router
+	Router     chi.Router
 }
 
 func NewServer(listenAddress string) *Server {
@@ -22,7 +23,7 @@ func NewServer(listenAddress string) *Server {
 	}
 	return &Server{
 		httpServer: httpServer,
-		router:     r,
+		Router:     r,
 	}
 }
 
@@ -32,11 +33,13 @@ func (s *Server) Start(stopWg *sync.WaitGroup, shutdownCh chan struct{}, errCh c
 
 	startFuncErrCh := make(chan error)
 	startFunc := func() {
+		fmt.Println("Starting server")
 		listener, err := net.Listen("tcp", s.httpServer.Addr)
 		if err != nil {
 			startFuncErrCh <- err
 			return
 		}
+		fmt.Println("Server listening at " + listener.Addr().String())
 		err = s.httpServer.Serve(listener)
 		if err != nil {
 			startFuncErrCh <- err
