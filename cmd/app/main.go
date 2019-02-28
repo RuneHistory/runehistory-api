@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/runehistory/runehistory-api/internal"
 	"github.com/runehistory/runehistory-api/internal/transport/http_transport"
 	"os"
@@ -17,9 +18,16 @@ func main() {
 	errCh := make(chan error)
 	go HandleShutdownSignal(shutdownCh)
 
-	// start mysql etc
-	var db *sql.DB
-	s := http_transport.NewServer("127.0.0.1:8080")
+	db, err := sql.Open("mysql", "root:@tcp(127.0.0.1:3306)/runehistory?multiStatements=true")
+	if err != nil {
+		panic(err)
+	}
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+
+	s := http_transport.NewServer("127.0.0.1:8000")
 
 	// initialise the app
 	internal.Init(s.Router, db)

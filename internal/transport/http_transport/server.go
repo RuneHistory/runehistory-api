@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 	"net"
 	"net/http"
 	"sync"
@@ -16,7 +17,7 @@ type Server struct {
 }
 
 func NewServer(listenAddress string) *Server {
-	r := chi.NewRouter()
+	r := newRouter()
 	httpServer := &http.Server{
 		Addr:    listenAddress,
 		Handler: r,
@@ -25,6 +26,16 @@ func NewServer(listenAddress string) *Server {
 		httpServer: httpServer,
 		Router:     r,
 	}
+}
+
+func newRouter() chi.Router {
+	r := chi.NewRouter()
+	r.Use(middleware.RequestID)
+	r.Use(middleware.RealIP)
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+	r.Use(middleware.Timeout(10 * time.Second))
+	return r
 }
 
 func (s *Server) Start(stopWg *sync.WaitGroup, shutdownCh chan struct{}, errCh chan error) {

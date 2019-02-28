@@ -3,13 +3,61 @@
 
 [[projects]]
   name = "github.com/go-chi/chi"
-  packages = ["."]
+  packages = [
+    ".",
+    "middleware"
+  ]
   revision = "1a6bb108ccf279c8dac6f9bad857d773b4f9b421"
   version = "v4.0.1"
+
+[[projects]]
+  name = "github.com/go-sql-driver/mysql"
+  packages = ["."]
+  revision = "72cd26f257d44c1114970e19afddcd812016007e"
+  version = "v1.4.1"
+
+[[projects]]
+  name = "github.com/mozillazg/go-slugify"
+  packages = ["."]
+  revision = "591116de2dd717fdb8c05e29fa3bf5d3f7ba8c87"
+  version = "v0.2.0"
+
+[[projects]]
+  name = "github.com/mozillazg/go-unidecode"
+  packages = [
+    ".",
+    "table"
+  ]
+  revision = "7ab3c72180eeb79ccb8746137e14d6b0a60dd685"
+  version = "v0.1.0"
+
+[[projects]]
+  name = "github.com/satori/go.uuid"
+  packages = ["."]
+  revision = "f58768cc1a7a7e77a3bd49e98cdd21419399b6a3"
+  version = "v1.2.0"
+
+[[projects]]
+  name = "github.com/tomwright/chiuriattr"
+  packages = ["."]
+  revision = "ea13cd36bee80c0341c1f38e5a61640ff6f2151f"
+  version = "2.0.1"
+
+[[projects]]
+  name = "github.com/tomwright/queryparam"
+  packages = ["."]
+  revision = "f169df3c9e7bb425151466419e407ff91004df90"
+  version = "2.0.2"
+
+[[projects]]
+  name = "google.golang.org/appengine"
+  packages = ["cloudsql"]
+  revision = "e9657d882bb81064595ca3b56cbe2546bbabf7b1"
+  version = "v1.4.0"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "3be2afefb3da733da226f2d2f10775fbd5884b4890cd2b8300894215c71a8f40"
+  inputs-digest = "5fd587988ca002881e1d15de1367f4fd5ba60fab7e1dca58930e6f86cba7cf1b"
   solver-name = "gps-cdcl"
   solver-version = 1
