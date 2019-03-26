@@ -4,50 +4,12 @@ import (
 	"errors"
 	"github.com/runehistory/runehistory-api/internal/domain/account"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"testing"
 )
 
-type MockRepository struct {
-	mock.Mock
-}
-
-func (x *MockRepository) Get() ([]*account.Account, error) {
-	args := x.Called()
-	return nil, args.Error(1)
-}
-func (x *MockRepository) GetById(id string) (*account.Account, error) {
-	args := x.Called(id)
-	return nil, args.Error(1)
-}
-func (x *MockRepository) CountId(id string) (int, error) {
-	args := x.Called(id)
-	return args.Int(0), args.Error(1)
-}
-func (x *MockRepository) GetBySlug(slug string) (*account.Account, error) {
-	args := x.Called(slug)
-	return nil, args.Error(1)
-}
-func (x *MockRepository) GetByNicknameWithoutId(nickname string, id string) (*account.Account, error) {
-	args := x.Called(nickname, id)
-	return nil, args.Error(1)
-}
-func (x *MockRepository) GetBySlugWithoutId(slug string, id string) (*account.Account, error) {
-	args := x.Called(slug, id)
-	return nil, args.Error(1)
-}
-func (x *MockRepository) Create(a *account.Account) (*account.Account, error) {
-	args := x.Called(a)
-	return nil, args.Error(1)
-}
-func (x *MockRepository) Update(a *account.Account) (*account.Account, error) {
-	args := x.Called(a)
-	return nil, args.Error(1)
-}
-
 func TestStdAccountRules_IDIsPresent(t *testing.T) {
 	a := assert.New(t)
-	repo := new(MockRepository)
+	repo := new(account.MockRepository)
 	rules := &StdAccountRules{
 		AccountRepo: repo,
 	}
@@ -67,7 +29,7 @@ func TestStdAccountRules_IDIsPresent(t *testing.T) {
 
 func TestStdAccountRules_IDIsCorrectLength(t *testing.T) {
 	a := assert.New(t)
-	repo := new(MockRepository)
+	repo := new(account.MockRepository)
 	rules := &StdAccountRules{
 		AccountRepo: repo,
 	}
@@ -88,7 +50,7 @@ func TestStdAccountRules_IDIsCorrectLength(t *testing.T) {
 func TestStdAccountRules_IDIsUnique_UniqueID(t *testing.T) {
 	a := assert.New(t)
 
-	repo := new(MockRepository)
+	repo := new(account.MockRepository)
 	rules := &StdAccountRules{
 		AccountRepo: repo,
 	}
@@ -105,7 +67,7 @@ func TestStdAccountRules_IDIsUnique_UniqueID(t *testing.T) {
 func TestStdAccountRules_IDIsUnique_NonUniqueID(t *testing.T) {
 	a := assert.New(t)
 
-	repo := new(MockRepository)
+	repo := new(account.MockRepository)
 	rules := &StdAccountRules{
 		AccountRepo: repo,
 	}
@@ -122,7 +84,7 @@ func TestStdAccountRules_IDIsUnique_NonUniqueID(t *testing.T) {
 func TestStdAccountRules_IDIsUnique_Err(t *testing.T) {
 	a := assert.New(t)
 
-	repo := new(MockRepository)
+	repo := new(account.MockRepository)
 	rules := &StdAccountRules{
 		AccountRepo: repo,
 	}
@@ -140,7 +102,7 @@ func TestStdAccountRules_IDIsUnique_Err(t *testing.T) {
 func TestStdAccountRules_IDWillBeUnique_Unique(t *testing.T) {
 	a := assert.New(t)
 
-	repo := new(MockRepository)
+	repo := new(account.MockRepository)
 	rules := &StdAccountRules{
 		AccountRepo: repo,
 	}
@@ -157,7 +119,7 @@ func TestStdAccountRules_IDWillBeUnique_Unique(t *testing.T) {
 func TestStdAccountRules_IDWillBeUnique_NonUnique(t *testing.T) {
 	a := assert.New(t)
 
-	repo := new(MockRepository)
+	repo := new(account.MockRepository)
 	rules := &StdAccountRules{
 		AccountRepo: repo,
 	}
@@ -174,7 +136,7 @@ func TestStdAccountRules_IDWillBeUnique_NonUnique(t *testing.T) {
 func TestStdAccountRules_IDWillBeUnique_Error(t *testing.T) {
 	a := assert.New(t)
 
-	repo := new(MockRepository)
+	repo := new(account.MockRepository)
 	rules := &StdAccountRules{
 		AccountRepo: repo,
 	}
