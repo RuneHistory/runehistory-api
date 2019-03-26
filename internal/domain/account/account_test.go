@@ -1,19 +1,17 @@
 package account
 
-import "testing"
+import (
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
 
 func TestNewAccount(t *testing.T) {
+	a := assert.New(t)
 	uuid := "my-uuid"
 	nickname := "Jim"
 	slug := "jim"
-	a := NewAccount(uuid, nickname, slug)
-	if a.ID != uuid {
-		t.Errorf("ID was incorrect, got: %s, want: %s", a.ID, uuid)
-	}
-	if a.Nickname != nickname {
-		t.Errorf("Nickname was incorrect, got: %s, want: %s", a.Nickname, nickname)
-	}
-	if a.Slug != slug {
-		t.Errorf("Slug was incorrect, got: %s, want: %s", a.Slug, slug)
-	}
+	acc := NewAccount(uuid, nickname, slug)
+	a.Equal(uuid, acc.ID)
+	a.Equal(nickname, acc.Nickname)
+	a.Equal(slug, acc.Slug)
 }

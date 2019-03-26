@@ -2,17 +2,15 @@ package errs
 
 import (
 	"errors"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
 )
 
 func TestNotFound(t *testing.T) {
+	a := assert.New(t)
 	err := errors.New("this is a failure")
 	customErr := NotFound(err.Error())
-	if err.Error() != customErr.Error() {
-		t.Errorf("Error was incorrect, got: %s, want: %s", customErr.Error(), err.Error())
-	}
-	if customErr.Code() != http.StatusNotFound {
-		t.Errorf("HTTP code was incorrect, got: %d, want: %d", customErr.Code(), http.StatusNotFound)
-	}
+	a.Equal(err.Error(), customErr.Error())
+	a.Equal(http.StatusNotFound, customErr.Code())
 }

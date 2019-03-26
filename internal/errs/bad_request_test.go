@@ -2,17 +2,15 @@ package errs
 
 import (
 	"errors"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
 )
 
 func TestBadRequest(t *testing.T) {
+	a := assert.New(t)
 	err := errors.New("this is a failure")
 	customErr := BadRequest(err.Error())
-	if err.Error() != customErr.Error() {
-		t.Errorf("Error was incorrect, got: %s, want: %s", customErr.Error(), err.Error())
-	}
-	if customErr.Code() != http.StatusBadRequest {
-		t.Errorf("HTTP code was incorrect, got: %d, want: %d", customErr.Code(), http.StatusBadRequest)
-	}
+	a.Equal(err.Error(), customErr.Error())
+	a.Equal(http.StatusBadRequest, customErr.Code())
 }

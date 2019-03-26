@@ -46,11 +46,11 @@ func (x *StdAccountRules) IDIsCorrectLength(a *account.Account) error {
 }
 
 func (x *StdAccountRules) IDWillBeUnique(a *account.Account) error {
-	existing, err := x.AccountRepo.GetById(a.ID)
+	amount, err := x.AccountRepo.CountId(a.ID)
 	if err != nil {
 		return err
 	}
-	if existing != nil {
+	if amount != 0 {
 		return fmt.Errorf("ID %s must be unique", a.ID)
 	}
 	return nil
