@@ -1,4 +1,4 @@
-package validate
+package mocks
 
 import (
 	"github.com/runehistory/runehistory-api/internal/domain/account"

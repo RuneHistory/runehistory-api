@@ -3,12 +3,13 @@ package validate
 import (
 	"errors"
 	"github.com/runehistory/runehistory-api/internal/domain/account"
+	accountMocks "github.com/runehistory/runehistory-api/internal/domain/account/mocks"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func getMockAccountRules() (*account.MockRepository, AccountRules) {
-	repo := new(account.MockRepository)
+func getMockAccountRules() (*accountMocks.MockRepository, AccountRules) {
+	repo := new(accountMocks.MockRepository)
 	rules := NewAccountRules(repo)
 	return repo, rules
 }
