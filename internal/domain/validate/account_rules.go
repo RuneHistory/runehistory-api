@@ -27,6 +27,12 @@ type AccountRules interface {
 	SlugIsUniqueToID(a *account.Account) error
 }
 
+func NewAccountRules(accountRepo account.Repository) AccountRules {
+	return &StdAccountRules{
+		AccountRepo: accountRepo,
+	}
+}
+
 type StdAccountRules struct {
 	AccountRepo account.Repository
 }
@@ -112,7 +118,7 @@ func (x *StdAccountRules) SlugIsUniqueToID(a *account.Account) error {
 		return err
 	}
 	if acc != nil {
-		return fmt.Errorf("slug %s already exists", a.Nickname)
+		return fmt.Errorf("slug %s already exists", a.Slug)
 	}
 	return nil
 }

@@ -11,11 +11,9 @@ type Validator interface {
 	UpdateAccount(a *account.Account) error
 }
 
-func NewValidator(accountRepo account.Repository) Validator {
+func NewValidator(accountRules AccountRules) Validator {
 	return &StdValidator{
-		accountRules: &StdAccountRules{
-			AccountRepo: accountRepo,
-		},
+		accountRules: accountRules,
 	}
 }
 

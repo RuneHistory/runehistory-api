@@ -7,11 +7,9 @@ import (
 	"testing"
 )
 
-func getMock() (*MockAccountRules, *StdValidator) {
+func getMock() (*MockAccountRules, Validator) {
 	rules := new(MockAccountRules)
-	validator := &StdValidator{
-		accountRules: rules,
-	}
+	validator := NewValidator(rules)
 	return rules, validator
 }
 

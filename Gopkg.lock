@@ -2,62 +2,123 @@
 
 
 [[projects]]
+  digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
+  name = "github.com/davecgh/go-spew"
+  packages = ["spew"]
+  pruneopts = "UT"
+  revision = "8991bc29aa16c548c550c7ff78260e27b9ab7c73"
+  version = "v1.1.1"
+
+[[projects]]
+  digest = "1:631757aef84dd471e4ba8242ac6affcccfc2c4c6d9c8c45e47b0d8fe8fd82de1"
   name = "github.com/go-chi/chi"
   packages = [
     ".",
-    "middleware"
+    "middleware",
   ]
+  pruneopts = "UT"
   revision = "1a6bb108ccf279c8dac6f9bad857d773b4f9b421"
   version = "v4.0.1"
 
 [[projects]]
+  digest = "1:ec6f9bf5e274c833c911923c9193867f3f18788c461f76f05f62bb1510e0ae65"
   name = "github.com/go-sql-driver/mysql"
   packages = ["."]
+  pruneopts = "UT"
   revision = "72cd26f257d44c1114970e19afddcd812016007e"
   version = "v1.4.1"
 
 [[projects]]
+  digest = "1:05e5a2e854eeeddda5e5ed5929ac53ce614b83a13a01d206b9d11e8ef56363be"
   name = "github.com/mozillazg/go-slugify"
   packages = ["."]
+  pruneopts = "UT"
   revision = "591116de2dd717fdb8c05e29fa3bf5d3f7ba8c87"
   version = "v0.2.0"
 
 [[projects]]
+  digest = "1:be88a46cd36136d9a0fbe8f42dffc269a62544e3a12ff3b047b4704f9b349b42"
   name = "github.com/mozillazg/go-unidecode"
   packages = [
     ".",
-    "table"
+    "table",
   ]
+  pruneopts = "UT"
   revision = "7ab3c72180eeb79ccb8746137e14d6b0a60dd685"
   version = "v0.1.0"
 
 [[projects]]
+  digest = "1:0028cb19b2e4c3112225cd871870f2d9cf49b9b4276531f03438a88e94be86fe"
+  name = "github.com/pmezard/go-difflib"
+  packages = ["difflib"]
+  pruneopts = "UT"
+  revision = "792786c7400a136282c1664665ae0a8db921c6c2"
+  version = "v1.0.0"
+
+[[projects]]
+  digest = "1:274f67cb6fed9588ea2521ecdac05a6d62a8c51c074c1fccc6a49a40ba80e925"
   name = "github.com/satori/go.uuid"
   packages = ["."]
+  pruneopts = "UT"
   revision = "f58768cc1a7a7e77a3bd49e98cdd21419399b6a3"
   version = "v1.2.0"
 
 [[projects]]
+  digest = "1:ac83cf90d08b63ad5f7e020ef480d319ae890c208f8524622a2f3136e2686b02"
+  name = "github.com/stretchr/objx"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "477a77ecc69700c7cdeb1fa9e129548e1c1c393c"
+  version = "v0.1.1"
+
+[[projects]]
+  digest = "1:0bcc464dabcfad5393daf87c3f8142911d0f6c52569b837e91a1c15e890265f3"
+  name = "github.com/stretchr/testify"
+  packages = [
+    "assert",
+    "mock",
+  ]
+  pruneopts = "UT"
+  revision = "ffdc059bfe9ce6a4e144ba849dbedead332c6053"
+  version = "v1.3.0"
+
+[[projects]]
+  digest = "1:69b065024cf793a97e4476cb67cbf16472a91c1c61f632011e95ced83c2138b5"
   name = "github.com/tomwright/chiuriattr"
   packages = ["."]
+  pruneopts = "UT"
   revision = "ea13cd36bee80c0341c1f38e5a61640ff6f2151f"
   version = "2.0.1"
 
 [[projects]]
+  digest = "1:080bdbbdea2ef8bc224b0a11b423848be3736e0438e09d614d9206f99ac04bd0"
   name = "github.com/tomwright/queryparam"
   packages = ["."]
+  pruneopts = "UT"
   revision = "f169df3c9e7bb425151466419e407ff91004df90"
   version = "2.0.2"
 
 [[projects]]
+  digest = "1:c25289f43ac4a68d88b02245742347c94f1e108c534dda442188015ff80669b3"
   name = "google.golang.org/appengine"
   packages = ["cloudsql"]
+  pruneopts = "UT"
   revision = "e9657d882bb81064595ca3b56cbe2546bbabf7b1"
   version = "v1.4.0"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "5fd587988ca002881e1d15de1367f4fd5ba60fab7e1dca58930e6f86cba7cf1b"
+  input-imports = [
+    "github.com/go-chi/chi",
+    "github.com/go-chi/chi/middleware",
+    "github.com/go-sql-driver/mysql",
+    "github.com/mozillazg/go-slugify",
+    "github.com/satori/go.uuid",
+    "github.com/stretchr/testify/assert",
+    "github.com/stretchr/testify/mock",
+    "github.com/tomwright/chiuriattr",
+    "github.com/tomwright/queryparam",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1
