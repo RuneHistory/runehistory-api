@@ -55,17 +55,25 @@ func (x *MockRepository) GetBySlugWithoutId(slug string, id string) (*account.Ac
 }
 func (x *MockRepository) Create(a *account.Account) (*account.Account, error) {
 	args := x.Called(a)
-	var r0 *account.Account
+	r0 := a
 	if acc, ok := args.Get(0).(*account.Account); ok {
 		r0 = acc
 	}
-	return r0, args.Error(1)
+	r1 := args.Error(1)
+	if r1 != nil {
+		r0 = nil
+	}
+	return r0, r1
 }
 func (x *MockRepository) Update(a *account.Account) (*account.Account, error) {
 	args := x.Called(a)
-	var r0 *account.Account
+	r0 := a
 	if acc, ok := args.Get(0).(*account.Account); ok {
 		r0 = acc
 	}
-	return r0, args.Error(1)
+	r1 := args.Error(1)
+	if r1 != nil {
+		r0 = nil
+	}
+	return r0, r1
 }

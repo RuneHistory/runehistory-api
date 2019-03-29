@@ -16,6 +16,13 @@ type Account interface {
 	Update(account *account.Account) (*account.Account, error)
 }
 
+func NewAccountService(repo account.Repository, validator validate.Validator) Account {
+	return &AccountService{
+		AccountRepo: repo,
+		Validator:   validator,
+	}
+}
+
 type AccountService struct {
 	AccountRepo account.Repository
 	Validator   validate.Validator

@@ -5,6 +5,19 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+type MockValidator struct {
+	mock.Mock
+}
+
+func (x *MockValidator) NewAccount(a *account.Account) error {
+	args := x.Called(a)
+	return args.Error(0)
+}
+func (x *MockValidator) UpdateAccount(a *account.Account) error {
+	args := x.Called(a)
+	return args.Error(0)
+}
+
 type MockAccountRules struct {
 	mock.Mock
 }

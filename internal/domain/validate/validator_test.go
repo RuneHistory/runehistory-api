@@ -14,7 +14,7 @@ func getMock() (*validateMocks.MockAccountRules, Validator) {
 	return rules, validator
 }
 
-func TestStdValidator_NewAccount(t *testing.T) {
+func TestStdValidator_NewAccount_AllValidationsWork(t *testing.T) {
 	a := assert.New(t)
 	rules, validator := getMock()
 
@@ -57,7 +57,7 @@ func TestStdValidator_NewAccount(t *testing.T) {
 	}
 }
 
-func TestStdValidator_UpdateAccount(t *testing.T) {
+func TestStdValidator_UpdateAccount_AllValidationsWork(t *testing.T) {
 	a := assert.New(t)
 	rules, validator := getMock()
 

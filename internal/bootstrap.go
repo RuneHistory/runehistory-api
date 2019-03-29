@@ -18,10 +18,7 @@ func Init(r chi.Router, db *sql.DB) {
 	accountRules := validate.NewAccountRules(accountRepo)
 	validator := validate.NewValidator(accountRules)
 
-	var accountService service.Account = &service.AccountService{
-		AccountRepo: accountRepo,
-		Validator:   validator,
-	}
+	accountService := service.NewAccountService(accountRepo, validator)
 
 	handlers := []handler.Handler{
 		&handler.GetAccounts{

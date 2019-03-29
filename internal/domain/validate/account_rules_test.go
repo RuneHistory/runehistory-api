@@ -14,7 +14,7 @@ func getMockAccountRules() (*accountMocks.MockRepository, AccountRules) {
 	return repo, rules
 }
 
-func TestStdAccountRules_IDIsPresent(t *testing.T) {
+func TestStdAccountRules_IDIsPresent_PresentID(t *testing.T) {
 	a := assert.New(t)
 	_, rules := getMockAccountRules()
 
@@ -22,16 +22,21 @@ func TestStdAccountRules_IDIsPresent(t *testing.T) {
 		ID: "present-id",
 	}
 	err := rules.IDIsPresent(acc)
-	a.Nil(err, "not expecting err for present ID")
-
-	acc = &account.Account{
-		ID: "",
-	}
-	err = rules.IDIsPresent(acc)
-	a.NotNil(err, "expecting error for vacant ID")
+	a.Nil(err)
 }
 
-func TestStdAccountRules_IDIsCorrectLength(t *testing.T) {
+func TestStdAccountRules_IDIsPresent_EmptyID(t *testing.T) {
+	a := assert.New(t)
+	_, rules := getMockAccountRules()
+
+	acc := &account.Account{
+		ID: "",
+	}
+	err := rules.IDIsPresent(acc)
+	a.NotNil(err)
+}
+
+func TestStdAccountRules_IDIsCorrectLength_IsCorrectLength(t *testing.T) {
 	a := assert.New(t)
 	_, rules := getMockAccountRules()
 
@@ -39,16 +44,32 @@ func TestStdAccountRules_IDIsCorrectLength(t *testing.T) {
 		ID: "uuid-correct-length-1234567890123456",
 	}
 	err := rules.IDIsCorrectLength(acc)
-	a.Nilf(err, "id with length %d should be valid", len(acc.ID))
-
-	acc = &account.Account{
-		ID: "uuid-incorrect-length",
-	}
-	err = rules.IDIsCorrectLength(acc)
-	a.NotNilf(err, "id with length %d should be invalid", len(acc.ID))
+	a.Nil(err)
 }
 
-func TestStdAccountRules_IDIsUnique(t *testing.T) {
+func TestStdAccountRules_IDIsCorrectLength_TooShort(t *testing.T) {
+	a := assert.New(t)
+	_, rules := getMockAccountRules()
+
+	acc := &account.Account{
+		ID: "uuid-too-short",
+	}
+	err := rules.IDIsCorrectLength(acc)
+	a.NotNil(err)
+}
+
+func TestStdAccountRules_IDIsCorrectLength_TooLong(t *testing.T) {
+	a := assert.New(t)
+	_, rules := getMockAccountRules()
+
+	acc := &account.Account{
+		ID: "uuid-too-long-uuid-too-long-uuid-too-long-",
+	}
+	err := rules.IDIsCorrectLength(acc)
+	a.NotNil(err)
+}
+
+func TestStdAccountRules_IDIsUnique_IDIsUnique(t *testing.T) {
 	a := assert.New(t)
 	repo, rules := getMockAccountRules()
 
@@ -57,24 +78,38 @@ func TestStdAccountRules_IDIsUnique(t *testing.T) {
 	}
 	repo.On("CountId", acc.ID).Return(1, nil).Once()
 	err := rules.IDIsUnique(acc)
-	a.Nil(err, "expecting ID to be unique", acc.ID)
+	a.Nil(err)
 	repo.AssertExpectations(t)
+}
 
-	acc.ID = "non-unique-id"
+func TestStdAccountRules_IDIsUnique_IDIsDuplicate(t *testing.T) {
+	a := assert.New(t)
+	repo, rules := getMockAccountRules()
+
+	acc := &account.Account{
+		ID: "non-unique-id",
+	}
 	repo.On("CountId", acc.ID).Return(2, nil).Once()
-	err = rules.IDIsUnique(acc)
-	a.NotNil(err, "expecting duplicate ID", acc.ID)
+	err := rules.IDIsUnique(acc)
+	a.NotNil(err)
 	repo.AssertExpectations(t)
+}
 
-	acc.ID = "id-is-unique-err"
+func TestStdAccountRules_IDIsUnique_RepoReturnsErr(t *testing.T) {
+	a := assert.New(t)
+	repo, rules := getMockAccountRules()
+
+	acc := &account.Account{
+		ID: "id-is-unique-err",
+	}
 	repo.On("CountId", acc.ID).Return(0, errors.New("expecting failure")).Once()
-	err = rules.IDIsUnique(acc)
-	a.NotNil(err, "expecting error")
+	err := rules.IDIsUnique(acc)
+	a.NotNil(err)
 	a.EqualError(err, "expecting failure")
 	repo.AssertExpectations(t)
 }
 
-func TestStdAccountRules_IDWillBeUnique(t *testing.T) {
+func TestStdAccountRules_IDWillBeUnique_IDDoesntExist(t *testing.T) {
 	a := assert.New(t)
 	repo, rules := getMockAccountRules()
 
@@ -83,24 +118,38 @@ func TestStdAccountRules_IDWillBeUnique(t *testing.T) {
 	}
 	repo.On("CountId", acc.ID).Return(0, nil).Once()
 	err := rules.IDWillBeUnique(acc)
-	a.Nil(err, "expecting id to be unique")
+	a.Nil(err)
 	repo.AssertExpectations(t)
+}
 
-	acc.ID = "non-unique-id"
+func TestStdAccountRules_IDWillBeUnique_IDExists(t *testing.T) {
+	a := assert.New(t)
+	repo, rules := getMockAccountRules()
+
+	acc := &account.Account{
+		ID: "non-unique-id",
+	}
 	repo.On("CountId", acc.ID).Return(1, nil).Once()
-	err = rules.IDWillBeUnique(acc)
-	a.NotNilf(err, "expecting duplicate id: %s", acc.ID)
+	err := rules.IDWillBeUnique(acc)
+	a.NotNil(err)
 	repo.AssertExpectations(t)
+}
 
-	acc.ID = "id-is-unique-err"
+func TestStdAccountRules_IDWillBeUnique_RepoReturnsErr(t *testing.T) {
+	a := assert.New(t)
+	repo, rules := getMockAccountRules()
+
+	acc := &account.Account{
+		ID: "id-is-unique-err",
+	}
 	repo.On("CountId", acc.ID).Return(0, errors.New("expecting failure")).Once()
-	err = rules.IDWillBeUnique(acc)
-	a.NotNil(err, "expecting error")
+	err := rules.IDWillBeUnique(acc)
+	a.NotNil(err)
 	a.EqualError(err, "expecting failure")
 	repo.AssertExpectations(t)
 }
 
-func TestStdAccountRules_NicknameIsPresent(t *testing.T) {
+func TestStdAccountRules_NicknameIsPresent_NicknameIsPresent(t *testing.T) {
 	a := assert.New(t)
 	_, rules := getMockAccountRules()
 
@@ -108,15 +157,22 @@ func TestStdAccountRules_NicknameIsPresent(t *testing.T) {
 		Nickname: "nickname-is-present",
 	}
 	err := rules.NicknameIsPresent(acc)
-	a.Nilf(err, "expecting nickname to be present: %v", err)
+	a.Nil(err)
+}
 
-	acc.Nickname = ""
-	err = rules.NicknameIsPresent(acc)
-	a.NotNil(err, "expecting error")
+func TestStdAccountRules_NicknameIsPresent_NicknameIsEmpty(t *testing.T) {
+	a := assert.New(t)
+	_, rules := getMockAccountRules()
+
+	acc := &account.Account{
+		Nickname: "",
+	}
+	err := rules.NicknameIsPresent(acc)
+	a.NotNil(err)
 	a.EqualError(err, "nickname is blank")
 }
 
-func TestStdAccountRules_NicknameIsNotTooLong(t *testing.T) {
+func TestStdAccountRules_NicknameIsNotTooLong_NicknameIsCorrectLength(t *testing.T) {
 	a := assert.New(t)
 	_, rules := getMockAccountRules()
 
@@ -124,15 +180,22 @@ func TestStdAccountRules_NicknameIsNotTooLong(t *testing.T) {
 		Nickname: "iFitInMaxLen",
 	}
 	err := rules.NicknameIsNotTooLong(acc)
-	a.Nilf(err, "expecting nickname to be valid: %v", err)
+	a.Nil(err)
+}
 
-	acc.Nickname = "iAmWayTooLong"
-	err = rules.NicknameIsNotTooLong(acc)
-	a.NotNil(err, "expecting error")
+func TestStdAccountRules_NicknameIsNotTooLong_NicknameIsTooLong(t *testing.T) {
+	a := assert.New(t)
+	_, rules := getMockAccountRules()
+
+	acc := &account.Account{
+		Nickname: "iAmWayTooLong",
+	}
+	err := rules.NicknameIsNotTooLong(acc)
+	a.NotNil(err)
 	a.EqualError(err, "nickname must be no longer than 12 characters")
 }
 
-func TestStdAccountRules_NicknameIsUniqueToID(t *testing.T) {
+func TestStdAccountRules_NicknameIsUniqueToID_NicknameIsUnique(t *testing.T) {
 	a := assert.New(t)
 	repo, rules := getMockAccountRules()
 
@@ -142,25 +205,41 @@ func TestStdAccountRules_NicknameIsUniqueToID(t *testing.T) {
 	}
 	repo.On("GetByNicknameWithoutId", acc.Nickname, acc.ID).Return(nil, nil).Once()
 	err := rules.NicknameIsUniqueToID(acc)
-	a.Nil(err, "expecting nickname to be unique to id")
+	a.Nil(err)
 	repo.AssertExpectations(t)
+}
 
-	acc.ID = "non-unique-id"
+func TestStdAccountRules_NicknameIsUniqueToID_NicknameNotUnique(t *testing.T) {
+	a := assert.New(t)
+	repo, rules := getMockAccountRules()
+
+	acc := &account.Account{
+		ID:       "non-unique-id",
+		Nickname: "My Nickname",
+	}
 	repo.On("GetByNicknameWithoutId", acc.Nickname, acc.ID).Return(&account.Account{}, nil).Once()
-	err = rules.NicknameIsUniqueToID(acc)
-	a.NotNilf(err, "expecting duplicate nickname: %s", acc.Nickname)
+	err := rules.NicknameIsUniqueToID(acc)
+	a.NotNil(err)
 	a.EqualError(err, "nickname My Nickname already exists")
 	repo.AssertExpectations(t)
+}
 
-	acc.ID = "id-err"
+func TestStdAccountRules_NicknameIsUniqueToID_RepoReturnsErr(t *testing.T) {
+	a := assert.New(t)
+	repo, rules := getMockAccountRules()
+
+	acc := &account.Account{
+		ID:       "id-err",
+		Nickname: "My Nickname",
+	}
 	repo.On("GetByNicknameWithoutId", acc.Nickname, acc.ID).Return(nil, errors.New("expecting failure")).Once()
-	err = rules.NicknameIsUniqueToID(acc)
-	a.NotNil(err, "expecting error")
+	err := rules.NicknameIsUniqueToID(acc)
+	a.NotNil(err)
 	a.EqualError(err, "expecting failure")
 	repo.AssertExpectations(t)
 }
 
-func TestStdAccountRules_SlugIsPresent(t *testing.T) {
+func TestStdAccountRules_SlugIsPresent_SlugIsPresent(t *testing.T) {
 	a := assert.New(t)
 	_, rules := getMockAccountRules()
 
@@ -168,31 +247,45 @@ func TestStdAccountRules_SlugIsPresent(t *testing.T) {
 		Slug: "slug-is-present",
 	}
 	err := rules.SlugIsPresent(acc)
-	a.Nilf(err, "expecting slug to be present: %v", err)
-
-	acc.Slug = ""
-	err = rules.SlugIsPresent(acc)
-	a.NotNil(err, "expecting error")
-	a.EqualError(err, "slug is blank")
+	a.Nil(err)
 }
 
-func TestStdAccountRules_SlugIsNotTooLong(t *testing.T) {
+func TestStdAccountRules_SlugIsPresent_SlugIsEmpty(t *testing.T) {
 	a := assert.New(t)
 	_, rules := getMockAccountRules()
 
 	acc := &account.Account{
-		Slug: "iFitInMaxLen",
+		Slug: "",
+	}
+	err := rules.SlugIsPresent(acc)
+	a.NotNil(err)
+	a.EqualError(err, "slug is blank")
+}
+
+func TestStdAccountRules_SlugIsNotTooLong_SlugIsCorrectLength(t *testing.T) {
+	a := assert.New(t)
+	_, rules := getMockAccountRules()
+
+	acc := &account.Account{
+		Slug: "ifitinmaxlen",
 	}
 	err := rules.SlugIsNotTooLong(acc)
-	a.Nilf(err, "expecting slug to be valid: %v", err)
+	a.Nil(err)
+}
 
-	acc.Slug = "iAmWayTooLong"
-	err = rules.SlugIsNotTooLong(acc)
-	a.NotNil(err, "expecting error")
+func TestStdAccountRules_SlugIsNotTooLong_SlugIsTooLong(t *testing.T) {
+	a := assert.New(t)
+	_, rules := getMockAccountRules()
+
+	acc := &account.Account{
+		Slug: "iamwaytoolong",
+	}
+	err := rules.SlugIsNotTooLong(acc)
+	a.NotNil(err)
 	a.EqualError(err, "slug must be no longer than 12 characters")
 }
 
-func TestStdAccountRules_SlugIsUniqueToID(t *testing.T) {
+func TestStdAccountRules_SlugIsUniqueToID_SlugIsUnique(t *testing.T) {
 	a := assert.New(t)
 	repo, rules := getMockAccountRules()
 
@@ -202,20 +295,36 @@ func TestStdAccountRules_SlugIsUniqueToID(t *testing.T) {
 	}
 	repo.On("GetBySlugWithoutId", acc.Slug, acc.ID).Return(nil, nil).Once()
 	err := rules.SlugIsUniqueToID(acc)
-	a.Nil(err, "expecting slug to be unique to id")
+	a.Nil(err)
 	repo.AssertExpectations(t)
+}
 
-	acc.ID = "non-unique-id"
+func TestStdAccountRules_SlugIsUniqueToID_SlugNotUnique(t *testing.T) {
+	a := assert.New(t)
+	repo, rules := getMockAccountRules()
+
+	acc := &account.Account{
+		ID:   "non-unique-id",
+		Slug: "my-slug",
+	}
 	repo.On("GetBySlugWithoutId", acc.Slug, acc.ID).Return(&account.Account{}, nil).Once()
-	err = rules.SlugIsUniqueToID(acc)
-	a.NotNilf(err, "expecting duplicate slug: %s", acc.Slug)
+	err := rules.SlugIsUniqueToID(acc)
+	a.NotNil(err)
 	a.EqualError(err, "slug my-slug already exists")
 	repo.AssertExpectations(t)
+}
 
-	acc.ID = "id-err"
+func TestStdAccountRules_SlugIsUniqueToID_RepoReturnsErr(t *testing.T) {
+	a := assert.New(t)
+	repo, rules := getMockAccountRules()
+
+	acc := &account.Account{
+		ID:   "id-err",
+		Slug: "my-slug",
+	}
 	repo.On("GetBySlugWithoutId", acc.Slug, acc.ID).Return(nil, errors.New("expecting failure")).Once()
-	err = rules.SlugIsUniqueToID(acc)
-	a.NotNil(err, "expecting error")
+	err := rules.SlugIsUniqueToID(acc)
+	a.NotNil(err)
 	a.EqualError(err, "expecting failure")
 	repo.AssertExpectations(t)
 }
