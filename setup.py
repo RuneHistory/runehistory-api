@@ -33,7 +33,7 @@ setup(
         'evntbus>=1.2.1,<2',
         'ioccontainer>=1.0.5,<2',
         'typing',
-        'Flask==0.12.2',
+        'Flask==1.0',
         'pymongo==3.6.0',
         'python-dateutil>=2.6.1,<3',
         'python-slugify==1.2.4',
