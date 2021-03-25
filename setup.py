@@ -42,7 +42,7 @@ setup(
         'passlib>=1.7.1,<2',
         'flask-cors>=3.0.4,<4',
         'dnspython>=1.15.0,<2',
-        'pyyaml>=3.12.0,<4',
+        'pyyaml>=3.12.0,<6',
         'pyrunehistory>=1.1.1,<2',
     ],
     extras_require={

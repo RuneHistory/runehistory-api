@@ -31,7 +31,7 @@ pytest==3.6.2
 pytest-watch==4.2.0
 python-dateutil==2.7.3
 python-slugify==1.2.4
-PyYAML==3.13
+PyYAML==5.4
 requests==2.19.1
 -e git+git@github.com:RuneHistory/runehistory-api.git@7d14cc12cc2c896ccc9ccca9545a7908feb58a16#egg=runehistory_api
 simplejwt==2.0.0
