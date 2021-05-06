@@ -13,7 +13,7 @@ dnspython==1.15.0
 docopt==0.6.2
 evntbus==1.2.1
 Flask==0.12.2
-Flask-Cors==3.0.6
+Flask-Cors==3.0.9
 idna==2.7
 ioccontainer==1.0.5
 itsdangerous==0.24
