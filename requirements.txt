@@ -39,7 +39,7 @@ six==1.11.0
 tox==3.0.0
 typing==3.6.4
 Unidecode==1.0.22
-urllib3==1.23
+urllib3==1.26.5
 virtualenv==16.0.0
 watchdog==0.8.3
 Werkzeug==0.14.1
